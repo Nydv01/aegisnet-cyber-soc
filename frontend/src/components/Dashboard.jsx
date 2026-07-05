@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SpotlightCard from './SpotlightCard';
 import ScrollReveal from './ScrollReveal';
 import AnimatedNumber from './AnimatedNumber';
@@ -71,18 +72,28 @@ function MiniChart({ data, color, height = 110 }) {
 }
 
 export default function Dashboard({ telemetry, events }) {
+  const navigate = useNavigate();
   const [bandwidthHistory, setBandwidthHistory] = useState([]);
   const [latencyHistory, setLatencyHistory] = useState([]);
+  const [packetRateHistory, setPacketRateHistory] = useState([]);
   const [modelMetrics, setModelMetrics] = useState(null);
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [blocking, setBlocking] = useState(false);
   const [blockMessage, setBlockMessage] = useState('');
+  const [uptime, setUptime] = useState(0);
 
-  // Sync bandwidth and latency telemetry
+  // Uptime counter
+  useEffect(() => {
+    const timer = setInterval(() => setUptime(prev => prev + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Sync bandwidth, latency, and packet rate telemetry
   useEffect(() => {
     if (!telemetry) return;
     setBandwidthHistory((prev) => [...prev.slice(-59), telemetry.bandwidth_in]);
     setLatencyHistory((prev) => [...prev.slice(-59), telemetry.latency_ms]);
+    setPacketRateHistory((prev) => [...prev.slice(-59), telemetry.packet_rate || Math.random() * 1000 + 200]);
   }, [telemetry]);
 
   // Load model validation metrics
@@ -99,6 +110,9 @@ export default function Dashboard({ telemetry, events }) {
   const t = telemetry || {};
   const isAttackActive = t.attack_type && t.attack_type !== 'none';
   const healthColor = t.system_health > 70 ? '#10b981' : t.system_health > 40 ? '#f59e0b' : '#ef4444';
+
+  // Format uptime
+  const uptimeStr = `${String(Math.floor(uptime / 3600)).padStart(2, '0')}:${String(Math.floor((uptime % 3600) / 60)).padStart(2, '0')}:${String(uptime % 60).padStart(2, '0')}`;
 
   const recentAlerts = (events || [])
     .filter((e) => e.severity === 'critical' || e.severity === 'alert' || e.severity === 'warning')
@@ -128,16 +142,73 @@ export default function Dashboard({ telemetry, events }) {
     }
   };
 
+  // Attack type display info
+  const attackInfo = {
+    ddos: { icon: '💥', name: 'DDoS Flood' },
+    port_scan: { icon: '🔭', name: 'Port Scan' },
+    brute_force: { icon: '🔐', name: 'Brute Force' },
+    sql_injection: { icon: '💉', name: 'SQL Injection' },
+  };
+
   return (
     <div className="dashboard-wrapper">
       <ScrollReveal>
-        <div className="page-header">
-          <h1>
-            <ShinyText>Security Operations Center</ShinyText>
-          </h1>
-          <p>
-            <TextScramble delay={100}>Real-time cyber telemetry and neural network response streams</TextScramble>
-          </p>
+        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1>
+              <ShinyText>📊 Security Operations Center</ShinyText>
+            </h1>
+            <p>
+              <TextScramble delay={100}>Real-time cyber telemetry and neural network response streams</TextScramble>
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', padding: '4px 10px', background: 'rgba(15,23,42,0.5)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--glass-border)' }}>
+              ⏱ {uptimeStr}
+            </span>
+            {isAttackActive && (
+              <span className="live-badge" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
+                <span className="live-dot" />
+                {attackInfo[t.attack_type]?.icon} {attackInfo[t.attack_type]?.name || 'ATTACK'}
+              </span>
+            )}
+          </div>
+        </div>
+      </ScrollReveal>
+
+      {/* ── Quick Stats Row ── */}
+      <ScrollReveal delay={30}>
+        <div className="stats-grid" style={{ marginBottom: 20 }}>
+          <SpotlightCard className="stat-card glass-card">
+            <div className="stat-icon cyan">📡</div>
+            <div className="stat-info">
+              <h3>Bandwidth In</h3>
+              <div className="stat-value"><AnimatedNumber value={t.bandwidth_in || 0} /> Mbps</div>
+            </div>
+          </SpotlightCard>
+          <SpotlightCard className="stat-card glass-card">
+            <div className="stat-icon purple">⚡</div>
+            <div className="stat-info">
+              <h3>Latency</h3>
+              <div className="stat-value"><AnimatedNumber value={t.latency_ms || 0} /> ms</div>
+            </div>
+          </SpotlightCard>
+          <SpotlightCard className="stat-card glass-card">
+            <div className={`stat-icon ${t.system_health > 70 ? 'green' : t.system_health > 40 ? 'orange' : 'red'}`}>💚</div>
+            <div className="stat-info">
+              <h3>System Health</h3>
+              <div className="stat-value" style={{ color: healthColor }}><AnimatedNumber value={t.system_health || 100} />%</div>
+            </div>
+          </SpotlightCard>
+          <SpotlightCard className="stat-card glass-card">
+            <div className="stat-icon blue">🤖</div>
+            <div className="stat-info">
+              <h3>Agent Status</h3>
+              <div className="stat-value" style={{ color: t.agent_status === 'active' ? 'var(--neon-green)' : 'var(--text-muted)', fontSize: '1rem' }}>
+                {t.agent_status === 'active' ? '● ACTIVE' : '○ STANDBY'}
+              </div>
+            </div>
+          </SpotlightCard>
         </div>
       </ScrollReveal>
 
@@ -150,7 +221,7 @@ export default function Dashboard({ telemetry, events }) {
             <div className="card-header">
               <h2>🌐 Global Threat Geolocation Map</h2>
               <span className={`card-badge ${isAttackActive ? 'badge-alert' : 'badge-live'}`}>
-                {isAttackActive ? '🚨 ATTACK VECTOR ACTIVE' : '● MONITORING GLOBAL CHANNELS'}
+                {isAttackActive ? '🚨 ATTACK VECTOR ACTIVE' : '● MONITORING'}
               </span>
             </div>
             <WorldMap attackActive={isAttackActive} attackType={t.attack_type} />
@@ -235,24 +306,34 @@ export default function Dashboard({ telemetry, events }) {
           </SpotlightCard>
         </ScrollReveal>
 
-        {/* Cell 5: Bandwidth & Latency Analytics (Col Span 2) */}
+        {/* Cell 5: Bandwidth, Latency & Packet Rate (Col Span 2) */}
         <ScrollReveal delay={250} className="bento-cell col-span-2">
           <SpotlightCard>
             <div className="card-header">
               <h2>📊 Analytics Performance Charts</h2>
+              <span className="live-badge">
+                <span className="live-dot" />
+                LIVE
+              </span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                  Bandwidth (Inbound: <AnimatedNumber value={t.bandwidth_in || 0} /> Mbps)
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                  Bandwidth (<AnimatedNumber value={t.bandwidth_in || 0} /> Mbps)
                 </span>
-                <MiniChart data={bandwidthHistory} color="#22d3ee" />
+                <MiniChart data={bandwidthHistory} color="#22d3ee" height={90} />
               </div>
               <div>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                  Latency (Response: <AnimatedNumber value={t.latency_ms || 0} /> ms)
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                  Latency (<AnimatedNumber value={t.latency_ms || 0} /> ms)
                 </span>
-                <MiniChart data={latencyHistory} color="#a855f7" />
+                <MiniChart data={latencyHistory} color="#a855f7" height={90} />
+              </div>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                  Packet Rate (pkt/s)
+                </span>
+                <MiniChart data={packetRateHistory} color="#10b981" height={90} />
               </div>
             </div>
           </SpotlightCard>

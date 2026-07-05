@@ -488,3 +488,38 @@ async def get_training_metrics():
             return json.load(f)
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="No training metrics found. Run training first.")
+
+
+@app.get("/api/models/metrics", tags=["ML Models"])
+async def get_model_metrics():
+    """
+    Get comprehensive model metrics for the AI Models showcase page.
+    Returns IDS, Phishing, and Defense Agent training results with
+    confusion matrices, feature importances, and reward curves.
+    """
+    metrics_path = os.path.join(
+        os.path.dirname(__file__), "metrics", "training_report.json"
+    )
+    try:
+        with open(metrics_path, "r") as f:
+            data = json.load(f)
+
+        # Also try to load agent episode rewards for the reward curve
+        agent_path = os.path.join(
+            os.path.dirname(__file__), "models", "defense_agent.json"
+        )
+        try:
+            with open(agent_path, "r") as f:
+                agent_data = json.load(f)
+            if "episode_rewards" in agent_data:
+                data.setdefault("defense_agent", {})["episode_rewards"] = agent_data["episode_rewards"]
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+
+        return data
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=404,
+            detail="No training metrics found. Run 'python -m backend.scripts.train_models' first."
+        )
+
