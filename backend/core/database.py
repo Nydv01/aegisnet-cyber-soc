@@ -33,11 +33,25 @@ from sqlalchemy.orm import declarative_base, sessionmaker, Session
 # ---------------------------------------------------------------------------
 
 DB_DIR = os.path.dirname(os.path.dirname(__file__))
-DATABASE_URL = f"sqlite:///{os.path.join(DB_DIR, 'aegisnet.db')}"
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL")
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+if DATABASE_URL:
+    # Handle Heroku/Render/Supabase style postgres:// protocol URLs
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    
+    # Connect to PostgreSQL (Supabase)
+    engine = create_engine(DATABASE_URL)
+    print("[Database] Connected to PostgreSQL (Supabase)")
+else:
+    # Fallback to local SQLite
+    DATABASE_URL = f"sqlite:///{os.path.join(DB_DIR, 'aegisnet.db')}"
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    print(f"[Database] Connected to local SQLite: {DATABASE_URL}")
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
 
 
 # ---------------------------------------------------------------------------
