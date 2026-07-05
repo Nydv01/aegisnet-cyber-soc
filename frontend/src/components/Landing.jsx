@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Terminal, Shield, Cpu, Activity, Database, Key } from 'lucide-react';
+import { Terminal, Shield, Cpu, Activity, Database, Key, ShieldAlert } from 'lucide-react';
 import SpotlightCard from './SpotlightCard';
 import ScrollReveal from './ScrollReveal';
 import ShinyText from './ShinyText';
 import TextScramble from './TextScramble';
 
+// Premium UI Overlays & Components
+import { BackgroundPaths } from './ui/background-paths';
 import { SplineScene } from './ui/spline';
+import { MagicDust } from './ui/magic-dust';
+import { ZoomParallax } from './ui/zoom-parallax';
 import { HoverSpotlight } from './ui/spotlight';
 
-// Premium background shapes
+// Floating Background Shape Component
 function ElegantShape({ className, delay = 0, width = 400, height = 100, rotate = 0, gradient = "from-white/[0.08]" }) {
   return (
     <motion.div
@@ -31,7 +35,7 @@ function ElegantShape({ className, delay = 0, width = 400, height = 100, rotate 
   );
 }
 
-// Stats counter hook
+// Stats Counter Hook
 function useCountUp(end, duration = 2000, start = 0) {
   const [value, setValue] = useState(start);
   const ref = useRef(null);
@@ -78,45 +82,45 @@ export default function Landing() {
   const bentoFeatures = [
     {
       icon: <Shield className="h-6 w-6 text-cyan-400" />,
-      title: 'Intrusion Detection',
-      desc: 'Random Forest classifiers trained on 20K+ synthetic network samples. Real-time packet inspection detecting DDoS, port scans, and SQL injections with 99.8% accuracy.',
+      title: 'Intrusion Detection System',
+      desc: 'Random Forest classifiers trained on 20K+ network flow logs. Live packet parsing detects DDoS, port scans, brute force, and SQL injections with 99.8% accuracy.',
       span: 'md:col-span-2',
       badge: 'ML Engine'
     },
     {
       icon: <Terminal className="h-6 w-6 text-indigo-400" />,
-      title: 'Phishing Scanner',
+      title: 'Phishing URL Scanner',
       desc: 'TF-IDF lexical n-gram tokenization and Shannon entropy calculations identify malicious URLs instantly.',
       span: 'md:col-span-1',
       badge: 'NLP Model'
     },
     {
       icon: <Cpu className="h-6 w-6 text-purple-400" />,
-      title: 'Q-Learning Agent',
+      title: 'Q-Learning Defense Agent',
       desc: 'Reinforcement learning agent trained over 5,000 episodes to select optimal mitigations like honeypot deployment or IP segmentation.',
       span: 'md:col-span-1',
       badge: 'RL Agent'
     },
     {
       icon: <Activity className="h-6 w-6 text-emerald-400" />,
-      title: 'Real-Time Telemetry Workspace',
+      title: 'SOC Telemetry Workspace',
       desc: 'WebSocket streams push system metrics, bandwidth, latency, and threat signals directly into live graphical HUD charts and interactive dials.',
       span: 'md:col-span-2',
       badge: 'SOC Command'
     },
     {
       icon: <Database className="h-6 w-6 text-rose-400" />,
-      title: 'ML Validation & Metrics Zoo',
+      title: 'Model Zoo & Validation Metrics',
       desc: 'Analyze active models using confusion matrix heatmaps, feature importance charts, and ROC/AUC reward curves generated from database evaluations.',
       span: 'md:col-span-2',
       badge: 'Metrics Console'
     },
     {
       icon: <Key className="h-6 w-6 text-amber-400" />,
-      title: 'Sandboxed Simulator',
+      title: 'SOC Threat Simulator',
       desc: 'Inject real-time cyber attacks and watch the autonomous Q-Agent isolate threat nodes live on a force-directed network topology graph.',
       span: 'md:col-span-1',
-      badge: 'SOC Simulator'
+      badge: 'Simulator'
     }
   ];
 
@@ -131,31 +135,52 @@ export default function Landing() {
     { name: 'Framer Motion', icon: '✨' }
   ];
 
+  // Theme-relevant Cybersecurity visual assets for the zoom parallax
+  const parallaxImages = [
+    { src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80', alt: 'Quantum Neural Ledger' },
+    { src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80', alt: 'Aegis Core Firewall Node' },
+    { src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', alt: 'Neural Network Synapse' },
+    { src: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80', alt: 'High-Density Datacenter Stacks' },
+    { src: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80', alt: 'ML Analytics Command Matrix' },
+    { src: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80', alt: 'Global Telemetry Core Gateway' },
+    { src: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=1200&q=80', alt: 'Quantum Crypto Segment' }
+  ];
+
+  // Particle Synthesis Sequence
+  const dustSequence = [
+    { type: 'text', text: 'AEGISNET', offset: [0, 0, 0] },
+    { type: 'shape', shape: 'torus', offset: [0, 0, 0] },
+    { type: 'text', text: 'AI DEFENSE', offset: [0, 0, 0] },
+    { type: 'shape', shape: 'sphere', offset: [0, 0, 0] },
+    { type: 'text', text: 'CYBER SOC', offset: [0, 0, 0] },
+    { type: 'shape', shape: 'box', offset: [0, 0, 0] },
+  ];
+
   return (
     <div className="landing-wrapper relative w-full min-h-screen bg-black overflow-hidden select-none" style={{ padding: 0 }}>
       
       {/* ── Background Geometric Floating Accents ── */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-40">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-50">
         <ElegantShape
           delay={0.2}
-          width={500}
-          height={120}
+          width={550}
+          height={140}
           rotate={12}
           gradient="from-cyan-500/[0.08]"
           className="left-[-10%] top-[10%]"
         />
         <ElegantShape
           delay={0.5}
-          width={400}
-          height={100}
+          width={450}
+          height={110}
           rotate={-15}
           gradient="from-indigo-500/[0.08]"
-          className="right-[-5%] top-[50%]"
+          className="right-[-5%] top-[40%]"
         />
         <ElegantShape
           delay={0.4}
-          width={250}
-          height={70}
+          width={300}
+          height={80}
           rotate={-8}
           gradient="from-purple-500/[0.08]"
           className="left-[10%] bottom-[15%]"
@@ -164,14 +189,14 @@ export default function Landing() {
 
       <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         
-        {/* ── SECTION 1: Split Hero Section ── */}
-        <section className="min-h-[85vh] flex flex-col md:flex-row items-center justify-between gap-12 pt-28 md:pt-16 pb-12">
+        {/* ── SECTION 1: Unified Premium Split Hero ── */}
+        <section className="min-h-[90vh] flex flex-col md:flex-row items-center justify-between gap-12 pt-28 md:pt-16 pb-12 relative">
           
-          {/* Left Column: Core pitch */}
-          <div className="flex-1 text-left flex flex-col items-start">
+          {/* Left Column: Title, Subtext, Buttons */}
+          <div className="flex-1 text-left flex flex-col items-start z-10">
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/20 border border-cyan-800/30 mb-6 backdrop-blur-sm">
-                <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/20 border border-cyan-800/30 mb-6 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.05)]">
+                <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
                 <span className="text-xs text-cyan-300 font-bold tracking-widest uppercase font-mono">
                   AegisNet Security Operations Active
                 </span>
@@ -211,23 +236,36 @@ export default function Landing() {
             </ScrollReveal>
           </div>
 
-          {/* Right Column: 3D Shield */}
-          <div className="flex-1 w-full md:max-w-[48%] aspect-square relative rounded-2xl border border-white/[0.06] bg-gradient-to-b from-zinc-950/50 to-black/30 backdrop-blur-md p-2 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+          {/* Right Column: 3D Shield Model with HUD Framing */}
+          <div className="flex-1 w-full md:max-w-[48%] aspect-square relative rounded-2xl border border-white/[0.06] bg-gradient-to-b from-zinc-950/50 to-black/30 backdrop-blur-md p-2 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)] group">
+            <HoverSpotlight size={200} className="from-cyan-500/10 via-transparent to-transparent" />
+            
+            {/* Top Hacker Ticks */}
             <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-zinc-900/80 border border-white/[0.05] rounded-md px-2.5 py-1 text-[0.68rem] text-cyan-400 font-mono">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
               INTERACTIVE 3D HUD
             </div>
+            <div className="absolute top-4 right-4 z-20 font-mono text-[0.62rem] text-cyan-500/60 bg-zinc-900/80 border border-white/[0.05] rounded-md px-2 py-1">
+              [LATENCY: 42MS]
+            </div>
+
             <div className="w-full h-full relative">
               <SplineScene 
                 scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
                 className="w-full h-full"
               />
             </div>
+
+            {/* Corner Hacker Brackets */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-500/50" />
+            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-500/50" />
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-500/50" />
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-500/50" />
           </div>
         </section>
 
-        {/* ── SECTION 2: Dynamic Stats Row ── */}
-        <section className="py-12 border-t border-b border-white/[0.05] my-12 bg-zinc-950/20 backdrop-blur-[2px] rounded-xl">
+        {/* ── SECTION 2: Dynamic Stats Counter Row ── */}
+        <section className="py-12 border-t border-b border-white/[0.05] my-12 bg-zinc-950/20 backdrop-blur-[2px] rounded-xl relative">
           <ScrollReveal>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               
@@ -305,7 +343,69 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ── SECTION 4: Architecture Pipeline ── */}
+      </div>
+
+      {/* ── SECTION 4: High-Performance Particle Engine (MagicDust) ── */}
+      <section className="relative py-24 bg-black border-t border-b border-white/[0.04] overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <MagicDust sequence={dustSequence} particleCount={7000} holdDuration={2.2} particleColor="#22d3ee" />
+        </div>
+        
+        {/* Tactical HUD Overlay for MagicDust */}
+        <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-6">
+          <div className="flex justify-between items-start">
+            <div className="font-mono text-[0.62rem] text-cyan-400 bg-zinc-950/60 border border-white/[0.04] px-2 py-1 rounded">
+              [CMD_STREAM: ACTIVE]
+            </div>
+            <div className="font-mono text-[0.62rem] text-cyan-400 bg-zinc-950/60 border border-white/[0.04] px-2 py-1 rounded">
+              [PARTICLES: 7,000]
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-end">
+            <div className="font-mono text-[0.62rem] text-cyan-500/50 flex flex-col gap-0.5">
+              <span>SYS_INF: CORE_ACTIVE</span>
+              <span>MEM_LOAD: 41.8%</span>
+              <span>NET_IN: 1084 KB/S</span>
+            </div>
+            <div className="font-mono text-[0.62rem] text-cyan-500/50 text-right">
+              SYSTEM LEVEL: ELITE
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-20 text-center pointer-events-none max-w-lg mx-auto px-6">
+          <span className="text-[0.65rem] tracking-[0.2em] font-extrabold text-cyan-400 uppercase">
+            Interactive Particle synthesis
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-4 mb-4">
+            Q-Agent Policy Simulation
+          </h2>
+          <p className="text-sm text-neutral-400 font-light leading-relaxed">
+            Hover and drag over the canvas to distort the particle structure and test active vector resolution mapping.
+          </p>
+        </div>
+      </section>
+
+      {/* ── SECTION 5: Zoom Parallax Cybersecurity Ledgers ── */}
+      <section className="relative py-24 bg-black">
+        <div className="text-center mb-16 max-w-lg mx-auto px-6">
+          <span className="text-[0.65rem] tracking-[0.25em] font-extrabold text-cyan-400 uppercase">
+            Visual Telemetry Grid
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-4 mb-4">
+            Parallax Node Cluster Showcase
+          </h2>
+          <p className="text-sm text-neutral-500 font-light leading-relaxed">
+            Scroll down to zoom into our active node clusters, remote postgresql databases, and core model weights.
+          </p>
+        </div>
+        <ZoomParallax images={parallaxImages} />
+      </section>
+
+      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
+        
+        {/* ── SECTION 6: Platform Pipeline Architecture ── */}
         <section className="py-16">
           <ScrollReveal>
             <SpotlightCard className="relative bg-zinc-950/40 border border-white/[0.05] rounded-2xl p-8 md:p-12 overflow-hidden shadow-2xl">
@@ -360,7 +460,7 @@ export default function Landing() {
           </ScrollReveal>
         </section>
 
-        {/* ── SECTION 5: Core Technology Pills ── */}
+        {/* ── SECTION 7: Core Technology Pills ── */}
         <section className="py-12 text-center">
           <ScrollReveal>
             <h3 className="text-xs tracking-[0.2em] font-extrabold text-neutral-500 uppercase mb-8">
@@ -380,7 +480,7 @@ export default function Landing() {
           </ScrollReveal>
         </section>
 
-        {/* ── SECTION 6: High-Class Call-To-Action ── */}
+        {/* ── SECTION 8: Holographic Call-To-Action ── */}
         <section className="py-16 pb-24">
           <ScrollReveal>
             <div className="relative rounded-2xl border border-white/[0.06] bg-gradient-to-b from-zinc-950 to-black p-10 md:p-16 overflow-hidden text-center shadow-2xl">

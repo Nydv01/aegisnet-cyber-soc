@@ -62,13 +62,13 @@ export function InteractiveGrid({ className }) {
     <div
       ref={containerRef}
       className={cn(
-        "absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-20",
+        "absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-[0.05]",
         className
       )}
       style={{
         backgroundImage: `
-          linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px)
+          linear-gradient(rgba(34, 211, 238, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 211, 238, 0.02) 1px, transparent 1px)
         `,
         backgroundSize: '40px 40px',
       }}
