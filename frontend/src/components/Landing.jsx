@@ -1,19 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Terminal, Shield, Cpu, Activity, Database, Key } from 'lucide-react';
 import SpotlightCard from './SpotlightCard';
 import ScrollReveal from './ScrollReveal';
 import ShinyText from './ShinyText';
 import TextScramble from './TextScramble';
 
-// Premium UI Overlays & Components
-import { HeroGeometric } from './ui/hero-geometric';
-import { BackgroundPaths } from './ui/background-paths';
-import { SplineSceneBasic } from './ui/demo';
-import { MagicDust } from './ui/magic-dust';
-import { ZoomParallax } from './ui/zoom-parallax';
+import { SplineScene } from './ui/spline';
 import { HoverSpotlight } from './ui/spotlight';
 
-// Animated number counter hook
+// Premium background shapes
+function ElegantShape({ className, delay = 0, width = 400, height = 100, rotate = 0, gradient = "from-white/[0.08]" }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -100, rotate: rotate - 10 }}
+      animate={{ opacity: 1, y: 0, rotate: rotate }}
+      transition={{ duration: 2.2, delay, ease: [0.23, 0.86, 0.39, 0.96], opacity: { duration: 1.2 } }}
+      className={`absolute pointer-events-none ${className}`}
+    >
+      <motion.div
+        animate={{ y: [0, 20, 0] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        style={{ width, height }}
+        className="relative"
+      >
+        <div className={`absolute inset-0 rounded-full bg-gradient-to-r to-transparent ${gradient} backdrop-blur-[1px] border border-white/[0.05] shadow-[0_8px_32px_0_rgba(255,255,255,0.01)]`} />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Stats counter hook
 function useCountUp(end, duration = 2000, start = 0) {
   const [value, setValue] = useState(start);
   const ref = useRef(null);
@@ -57,288 +75,302 @@ export default function Landing() {
   const [response, responseRef] = useCountUp(47, 1800);
   const [agents, agentsRef] = useCountUp(5000, 2000);
 
-  const features = [
+  const bentoFeatures = [
     {
-      icon: '🔍',
+      icon: <Shield className="h-6 w-6 text-cyan-400" />,
       title: 'Intrusion Detection',
-      desc: 'Random Forest classifiers trained on 20K+ synthetic NSL-KDD samples. Real-time packet inspection detecting DDoS, port scans, brute force, and SQL injection attacks with 99.8% accuracy.',
+      desc: 'Random Forest classifiers trained on 20K+ synthetic network samples. Real-time packet inspection detecting DDoS, port scans, and SQL injections with 99.8% accuracy.',
+      span: 'md:col-span-2',
+      badge: 'ML Engine'
     },
     {
-      icon: '🌐',
-      title: 'Phishing URL Scanner',
-      desc: 'TF-IDF character n-gram tokenization combined with 18 hand-crafted lexical features. Shannon entropy analysis and structural pattern matching classify malicious URLs instantly.',
+      icon: <Terminal className="h-6 w-6 text-indigo-400" />,
+      title: 'Phishing Scanner',
+      desc: 'TF-IDF lexical n-gram tokenization and Shannon entropy calculations identify malicious URLs instantly.',
+      span: 'md:col-span-1',
+      badge: 'NLP Model'
     },
     {
-      icon: '🤖',
+      icon: <Cpu className="h-6 w-6 text-purple-400" />,
       title: 'Q-Learning Agent',
-      desc: 'Autonomous tabular Q-Learning defense agent trained over 5,000 episodes. Epsilon-greedy exploration with Bellman updates. Selects defensive actions: block IP, rate-limit, honeypot, patch, isolate.',
+      desc: 'Reinforcement learning agent trained over 5,000 episodes to select optimal mitigations like honeypot deployment or IP segmentation.',
+      span: 'md:col-span-1',
+      badge: 'RL Agent'
     },
     {
-      icon: '📊',
-      title: 'Real-Time SOC Dashboard',
-      desc: 'WebSocket-streamed telemetry powering live gauges, threat maps, traffic sparklines, radar scans, and event feeds. See CPU, RAM, bandwidth, latency, and health in real time.',
+      icon: <Activity className="h-6 w-6 text-emerald-400" />,
+      title: 'Real-Time Telemetry Workspace',
+      desc: 'WebSocket streams push system metrics, bandwidth, latency, and threat signals directly into live graphical HUD charts and interactive dials.',
+      span: 'md:col-span-2',
+      badge: 'SOC Command'
     },
     {
-      icon: '🧠',
-      title: 'ML Model Zoo',
-      desc: 'Gradient Boosting, MLP Neural Network, and ensemble voting classifiers. Complete training pipeline with confusion matrices, ROC curves, and feature importance visualizations.',
+      icon: <Database className="h-6 w-6 text-rose-400" />,
+      title: 'ML Validation & Metrics Zoo',
+      desc: 'Analyze active models using confusion matrix heatmaps, feature importance charts, and ROC/AUC reward curves generated from database evaluations.',
+      span: 'md:col-span-2',
+      badge: 'Metrics Console'
     },
     {
-      icon: '⚔️',
-      title: 'Attack Simulator',
-      desc: 'Launch DDoS floods, port scans, brute force, and SQL injection in a sandboxed environment. Watch the AI agent autonomously mitigate threats through a force-directed network graph.',
-    },
+      icon: <Key className="h-6 w-6 text-amber-400" />,
+      title: 'Sandboxed Simulator',
+      desc: 'Inject real-time cyber attacks and watch the autonomous Q-Agent isolate threat nodes live on a force-directed network topology graph.',
+      span: 'md:col-span-1',
+      badge: 'SOC Simulator'
+    }
   ];
 
   const techStack = [
-    { icon: '🐍', name: 'Python' },
-    { icon: '⚡', name: 'FastAPI' },
-    { icon: '⚛️', name: 'React 19' },
-    { icon: '🔬', name: 'scikit-learn' },
-    { icon: '📊', name: 'NumPy / Pandas' },
-    { icon: '🔗', name: 'WebSocket' },
-    { icon: '🧪', name: 'TF-IDF NLP' },
-    { icon: '🤖', name: 'Q-Learning RL' },
-    { icon: '🗄️', name: 'SQLAlchemy' },
-    { icon: '🔐', name: 'JWT Auth' },
-    { icon: '⚡', name: 'Vite' },
-    { icon: '📈', name: 'Gradient Boosting' },
-  ];
-
-  // ZoomParallax security visuals
-  const parallaxImages = [
-    { src: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80', alt: 'Neural Grid Layer' },
-    { src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80', alt: 'Elite Defense Firewall' },
-    { src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80', alt: 'Matrix Telemetry Stream' },
-    { src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80', alt: 'AI Agent Circuitry' },
-    { src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80', alt: 'Glow Waveform Topology' },
-    { src: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80', alt: 'Holographic Threat Terminal' },
-    { src: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80', alt: 'Global Core Ledger' },
-  ];
-
-  // MagicDust word sequence
-  const dustSequence = [
-    { type: 'text', text: 'AEGISNET', offset: [0, 0, 0] },
-    { type: 'shape', shape: 'torus', offset: [0, 0, 0] },
-    { type: 'text', text: 'AI DEFENSE', offset: [0, 0, 0] },
-    { type: 'shape', shape: 'sphere', offset: [0, 0, 0] },
-    { type: 'text', text: 'CYBER SOC', offset: [0, 0, 0] },
-    { type: 'shape', shape: 'box', offset: [0, 0, 0] },
+    { name: 'Python', icon: '🐍' },
+    { name: 'FastAPI', icon: '⚡' },
+    { name: 'React 19', icon: '⚛️' },
+    { name: 'scikit-learn', icon: '🔬' },
+    { name: 'Three.js', icon: '🎨' },
+    { name: 'WebSocket', icon: '🔗' },
+    { name: 'PostgreSQL', icon: '🗄️' },
+    { name: 'Framer Motion', icon: '✨' }
   ];
 
   return (
-    <div className="landing-wrapper" style={{ maxWidth: '100%', padding: 0 }}>
+    <div className="landing-wrapper relative w-full min-h-screen bg-black overflow-hidden select-none" style={{ padding: 0 }}>
       
-      {/* ── 1. Hero Geometric Header ── */}
-      <section className="relative min-h-[90vh] flex flex-col items-center justify-center bg-black overflow-hidden border-b border-cyan-500/10">
-        <HeroGeometric
-          badge="🛡️ AEGISNET SECURITY OPERATIONS ACTIVE"
-          title1="Autonomous AI-Driven"
-          title2="Cyber SOC Architecture"
-          subtitle="Empowered by reinforcement learning agents, multi-feature NLP classifiers, and real-time deep neural packet telemetry."
+      {/* ── Background Geometric Floating Accents ── */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-40">
+        <ElegantShape
+          delay={0.2}
+          width={500}
+          height={120}
+          rotate={12}
+          gradient="from-cyan-500/[0.08]"
+          className="left-[-10%] top-[10%]"
         />
+        <ElegantShape
+          delay={0.5}
+          width={400}
+          height={100}
+          rotate={-15}
+          gradient="from-indigo-500/[0.08]"
+          className="right-[-5%] top-[50%]"
+        />
+        <ElegantShape
+          delay={0.4}
+          width={250}
+          height={70}
+          rotate={-8}
+          gradient="from-purple-500/[0.08]"
+          className="left-[10%] bottom-[15%]"
+        />
+      </div>
+
+      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         
-        {/* Buttons overlay */}
-        <ScrollReveal delay={300}>
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', zIndex: 20, position: 'relative', marginTop: -40, marginBottom: 40 }}>
-            <button
-              onClick={handleStart}
-              className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-bold text-base shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all duration-300 hover:-translate-y-0.5"
-            >
-              🚀 Enter Command Center
-            </button>
-            <button
-              onClick={() => navigate('/models')}
-              className="px-8 py-4 bg-zinc-900/80 hover:bg-zinc-800/90 text-cyan-400 rounded-xl font-bold text-base border border-cyan-500/30 transition-all duration-300 hover:-translate-y-0.5"
-            >
-              🧠 Explore AI Models
-            </button>
+        {/* ── SECTION 1: Split Hero Section ── */}
+        <section className="min-h-[85vh] flex flex-col md:flex-row items-center justify-between gap-12 pt-28 md:pt-16 pb-12">
+          
+          {/* Left Column: Core pitch */}
+          <div className="flex-1 text-left flex flex-col items-start">
+            <ScrollReveal>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/20 border border-cyan-800/30 mb-6 backdrop-blur-sm">
+                <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-xs text-cyan-300 font-bold tracking-widest uppercase font-mono">
+                  AegisNet Security Operations Active
+                </span>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={100}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
+                Autonomous AI-Driven <br />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400">
+                  Cyber SOC Terminal
+                </span>
+              </h1>
+            </ScrollReveal>
+
+            <ScrollReveal delay={200}>
+              <p className="text-base md:text-lg text-neutral-400 font-light mb-8 max-w-xl leading-relaxed">
+                Empowered by reinforcement learning defense agents, multi-feature NLP URL classifiers, and high-performance neural packet telemetry.
+              </p>
+            </ScrollReveal>
+
+            <ScrollReveal delay={300}>
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={handleStart}
+                  className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-bold text-sm shadow-[0_0_30px_rgba(6,182,212,0.25)] transition-all duration-300 hover:-translate-y-0.5"
+                >
+                  🚀 Launch SOC Console
+                </button>
+                <button
+                  onClick={() => navigate('/models')}
+                  className="px-8 py-4 bg-zinc-950/80 hover:bg-zinc-900/90 text-cyan-400 rounded-xl font-bold text-sm border border-cyan-800/40 transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-md"
+                >
+                  🧠 Explore ML Models
+                </button>
+              </div>
+            </ScrollReveal>
           </div>
-        </ScrollReveal>
-      </section>
 
-      {/* ── 2. Background Paths & Interactive 3D Spline Scene ── */}
-      <section className="relative py-20 bg-black/40 border-b border-cyan-500/10" style={{ paddingLeft: '5%', paddingRight: '5%' }}>
-        <BackgroundPaths
-          title="Interactive 3D Grid"
-          subtitle="Live neural structure rendering our distributed agent nodes."
-        />
-        <div style={{ maxWidth: 1100, margin: '0 auto', marginTop: -120, zIndex: 10, position: 'relative' }}>
-          <SplineSceneBasic onAction={handleStart} />
-        </div>
-      </section>
+          {/* Right Column: 3D Shield */}
+          <div className="flex-1 w-full md:max-w-[48%] aspect-square relative rounded-2xl border border-white/[0.06] bg-gradient-to-b from-zinc-950/50 to-black/30 backdrop-blur-md p-2 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+            <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-zinc-900/80 border border-white/[0.05] rounded-md px-2.5 py-1 text-[0.68rem] text-cyan-400 font-mono">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
+              INTERACTIVE 3D HUD
+            </div>
+            <div className="w-full h-full relative">
+              <SplineScene 
+                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+        </section>
 
-      {/* ── 3. Magic Dust Interactive Particle Mesh ── */}
-      <section className="relative h-[60vh] bg-black flex flex-col justify-center items-center border-b border-cyan-500/10 overflow-hidden">
-        <div className="absolute inset-0">
-          <MagicDust sequence={dustSequence} particleCount={8000} particleColor="#22d3ee" holdDuration={2.5} />
-        </div>
-        <div className="absolute top-10 text-center z-10">
-          <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>
-            Quantum Particle Simulation
-          </span>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: 4 }}>
-            Active Core Particle Synthesis
-          </h2>
-        </div>
-        <div className="absolute bottom-10 z-10 text-center max-w-md px-6">
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-            Hover and drag over the canvas to distort the reinforcement learning network mapping structure.
-          </p>
-        </div>
-      </section>
-
-      {/* ── 4. Zoom Parallax Showcase ── */}
-      <section className="relative bg-black">
-        <div style={{ padding: '60px 20px 20px', textAlign: 'center' }}>
-          <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--neon-cyan)', fontWeight: 800 }}>
-            Visual Telemetry Ledgers
-          </span>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: 6 }}>
-            Parallax Telemetry Overview
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: 4 }}>
-            Scroll down to zoom into our active node clusters and global database layers.
-          </p>
-        </div>
-        <ZoomParallax images={parallaxImages} />
-      </section>
-
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
-        
-        {/* ── 5. Animated Stats Row ── */}
-        <section style={{ margin: '80px 0' }}>
+        {/* ── SECTION 2: Dynamic Stats Row ── */}
+        <section className="py-12 border-t border-b border-white/[0.05] my-12 bg-zinc-950/20 backdrop-blur-[2px] rounded-xl">
           <ScrollReveal>
-            <div className="stat-counter-row">
-              <div className="stat-counter-item" ref={threatsRef}>
-                <div className="stat-counter-value" style={{ color: 'var(--neon-red)', textShadow: '0 0 15px rgba(239, 68, 68, 0.3)' }}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              
+              <div className="stat-counter-item flex flex-col justify-center" ref={threatsRef}>
+                <div className="text-3xl md:text-4xl font-extrabold text-red-500 font-mono mb-1">
                   {threats.toLocaleString()}+
                 </div>
-                <div className="stat-counter-label">Threats Analyzed</div>
+                <div className="text-[0.68rem] tracking-wider font-bold text-neutral-500 uppercase">Threats Mitigated</div>
               </div>
-              <div className="stat-counter-item" ref={accuracyRef}>
-                <div className="stat-counter-value" style={{ color: 'var(--neon-green)', textShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}>
+
+              <div className="stat-counter-item flex flex-col justify-center" ref={accuracyRef}>
+                <div className="text-3xl md:text-4xl font-extrabold text-emerald-400 font-mono mb-1">
                   {(accuracy / 10).toFixed(1)}%
                 </div>
-                <div className="stat-counter-label">Detection Rate</div>
+                <div className="text-[0.68rem] tracking-wider font-bold text-neutral-500 uppercase">Accuracy Rate</div>
               </div>
-              <div className="stat-counter-item" ref={responseRef}>
-                <div className="stat-counter-value" style={{ color: 'var(--neon-cyan)', textShadow: '0 0 15px rgba(34, 211, 238, 0.3)' }}>
+
+              <div className="stat-counter-item flex flex-col justify-center" ref={responseRef}>
+                <div className="text-3xl md:text-4xl font-extrabold text-cyan-400 font-mono mb-1">
                   &lt;{response}ms
                 </div>
-                <div className="stat-counter-label">Response Time</div>
+                <div className="text-[0.68rem] tracking-wider font-bold text-neutral-500 uppercase">Mitigation Speed</div>
               </div>
-              <div className="stat-counter-item" ref={agentsRef}>
-                <div className="stat-counter-value" style={{ color: 'var(--neon-purple)', textShadow: '0 0 15px rgba(168, 85, 247, 0.3)' }}>
+
+              <div className="stat-counter-item flex flex-col justify-center" ref={agentsRef}>
+                <div className="text-3xl md:text-4xl font-extrabold text-purple-400 font-mono mb-1">
                   {agents.toLocaleString()}
                 </div>
-                <div className="stat-counter-label">Episodes Trained</div>
+                <div className="text-[0.68rem] tracking-wider font-bold text-neutral-500 uppercase">Episodes Trained</div>
               </div>
+
             </div>
           </ScrollReveal>
         </section>
 
-        {/* ── 6. Feature Cards Grid ── */}
-        <section className="landing-features" style={{ marginBottom: 80 }}>
+        {/* ── SECTION 3: Bento Features Grid ── */}
+        <section className="py-16">
           <ScrollReveal>
-            <h2 style={{ textAlign: 'center', marginBottom: 12, fontSize: '2rem', fontWeight: 900 }}>
-              <ShinyText>Defensive Cyber Arsenal</ShinyText>
-            </h2>
-            <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: 48, fontSize: '0.88rem' }}>
-              Six modular security layers coordinated by scikit-learn classifiers and deep Q-learning defense algorithms
-            </p>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+                <ShinyText>Cyber SOC Arsenal</ShinyText>
+              </h2>
+              <p className="text-sm md:text-base text-neutral-500 max-w-xl mx-auto font-light leading-relaxed">
+                Six high-performance defensive layers unified by scikit-learn classifiers, NLP networks, and reinforcement learning engines.
+              </p>
+            </div>
           </ScrollReveal>
 
-          <div className="features-grid-6">
-            {features.map((f, i) => (
-              <ScrollReveal key={i} delay={100 + i * 50}>
-                <div className="relative group">
-                  {/* Hover Spotlight layer inside each feature card */}
-                  <SpotlightCard className="feature-card" style={{ height: '100%' }}>
-                    <HoverSpotlight size={140} className="from-cyan-500/10 via-blue-500/5 to-transparent" />
-                    <div className="feature-icon">{f.icon}</div>
-                    <h3 style={{ position: 'relative', zIndex: 2 }}>{f.title}</h3>
-                    <p style={{ position: 'relative', zIndex: 2 }}>{f.desc}</p>
-                  </SpotlightCard>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {bentoFeatures.map((f, i) => (
+              <ScrollReveal key={i} delay={100 + i * 50} className={`bento-cell ${f.span}`}>
+                <SpotlightCard className="relative p-8 h-full bg-zinc-950/60 border border-white/[0.05] rounded-xl hover:border-cyan-500/20 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+                  <HoverSpotlight size={120} className="from-cyan-500/10 via-transparent to-transparent" />
+                  
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="p-3 bg-zinc-900 border border-white/[0.04] rounded-lg">
+                        {f.icon}
+                      </div>
+                      <span className="text-[0.65rem] font-bold text-cyan-400/80 font-mono uppercase bg-cyan-950/10 border border-cyan-900/30 px-2 py-0.5 rounded">
+                        {f.badge}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors duration-300">
+                      {f.title}
+                    </h3>
+                    <p className="text-sm text-neutral-400 font-light leading-relaxed mb-4">
+                      {f.desc}
+                    </p>
+                  </div>
+                </SpotlightCard>
               </ScrollReveal>
             ))}
           </div>
         </section>
 
-        {/* ── 7. Architecture Diagram ── */}
-        <section style={{ marginBottom: 80 }}>
+        {/* ── SECTION 4: Architecture Pipeline ── */}
+        <section className="py-16">
           <ScrollReveal>
-            <SpotlightCard className="glass-card" style={{ padding: 40, position: 'relative', overflow: 'hidden' }}>
-              <HoverSpotlight size={240} className="from-cyan-500/10 via-purple-500/5 to-transparent" />
+            <SpotlightCard className="relative bg-zinc-950/40 border border-white/[0.05] rounded-2xl p-8 md:p-12 overflow-hidden shadow-2xl">
+              <HoverSpotlight size={240} className="from-cyan-500/8 via-purple-500/4 to-transparent" />
               
-              <div style={{ textAlign: 'center', marginBottom: 30 }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: 8 }}>
-                  🛡️ Platform Pipeline Architecture
+              <div className="text-center mb-12">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">
+                  🛡️ Threat Resolution Pipeline
                 </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
-                  Unified real-time flow connecting threat vector simulation, AI classifiers, and reinforcement learning
+                <p className="text-xs md:text-sm text-neutral-500 max-w-lg mx-auto">
+                  A synchronous flow connecting simulation parameters with machine learning models and automated actions.
                 </p>
               </div>
 
-              <div className="architecture-grid">
-                <div className="arch-node">
-                  <span className="arch-node-badge">LAYER 1</span>
-                  <h4>Attack Simulator</h4>
-                  <p>DDoS, brute-force, SQL injection vector generator</p>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-center text-center">
+                
+                <div className="bg-zinc-900/80 border border-white/[0.03] p-6 rounded-xl">
+                  <span className="text-[0.62rem] font-bold text-neutral-500 font-mono uppercase">L1 ENTRY</span>
+                  <h4 className="text-base font-bold text-white mt-2 mb-1">Simulator</h4>
+                  <p className="text-xs text-neutral-400 font-light leading-relaxed">Generates ddos, SQLi, and brute-force traffic parameters.</p>
                 </div>
-                <div className="arch-flow-arrow">➡️</div>
-                <div className="arch-node active">
-                  <span className="arch-node-badge">LAYER 2</span>
-                  <h4>ML Classification Engine</h4>
-                  <p>Intrusion detection (RF) & Phishing classification (LR)</p>
+                
+                <div className="hidden md:block text-2xl text-neutral-600">➡️</div>
+                
+                <div className="bg-zinc-900/80 border border-cyan-500/10 p-6 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.02)]">
+                  <span className="text-[0.62rem] font-bold text-cyan-400 font-mono uppercase">L2 CLASSIFICATION</span>
+                  <h4 className="text-base font-bold text-cyan-300 mt-2 mb-1">ML Engines</h4>
+                  <p className="text-xs text-neutral-400 font-light leading-relaxed">Inspects traffic flags via Random Forest and Logistic Regression.</p>
                 </div>
-                <div className="arch-flow-arrow">➡️</div>
-                <div className="arch-node active-agent">
-                  <span className="arch-node-badge">LAYER 3</span>
-                  <h4>Autonomous RL Agent</h4>
-                  <p>Deep Q-learning agent executing mitigation actions</p>
+                
+                <div className="hidden md:block text-2xl text-neutral-600">➡️</div>
+                
+                <div className="bg-zinc-900/80 border border-purple-500/10 p-6 rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.02)]">
+                  <span className="text-[0.62rem] font-bold text-purple-400 font-mono uppercase">L3 MITIGATION</span>
+                  <h4 className="text-base font-bold text-purple-300 mt-2 mb-1">Q-Agent</h4>
+                  <p className="text-xs text-neutral-400 font-light leading-relaxed">Selects optimum response using a pre-trained policy table.</p>
                 </div>
+
               </div>
 
-              {/* Technical description block */}
-              <div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: '0.78rem', color: 'var(--text-secondary)', borderTop: '1px solid var(--glass-border)', paddingTop: 24 }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 pt-8 border-t border-white/[0.04] text-xs md:text-sm">
                 <div>
-                  <h5 style={{ color: 'var(--text-primary)', fontWeight: 700, marginBottom: 6 }}>📡 WebSocket Telemetry Link</h5>
-                  <p>Real-time telemetry stream pushes CPU, RAM, bandwidth metrics, packet rates, and log signals at 2.4kbps directly into the React client.</p>
+                  <h5 className="font-bold text-white mb-2">📡 Streaming WebSockets</h5>
+                  <p className="text-neutral-400 font-light leading-relaxed">Real-time status changes, threat coordinates, and log messages stream directly to the React front-end client at low latency.</p>
                 </div>
                 <div>
-                  <h5 style={{ color: 'var(--text-primary)', fontWeight: 700, marginBottom: 6 }}>🛡️ Automated Remediation Dials</h5>
-                  <p>The neural agent evaluates network vectors to trigger automated blocks, rate limits, and honeypots within a sandboxed environment.</p>
+                  <h5 className="font-bold text-white mb-2">🛡️ Autonomous Mitigation</h5>
+                  <p className="text-neutral-400 font-light leading-relaxed">Mitigations ( honeypots, rate-limits, firewall blocks ) deploy instantly in the host environment to contain active threat vectors.</p>
                 </div>
               </div>
             </SpotlightCard>
           </ScrollReveal>
         </section>
 
-        {/* ── 8. Technology Stack Pills ── */}
-        <section style={{ textAlign: 'center', marginBottom: 80 }}>
+        {/* ── SECTION 5: Core Technology Pills ── */}
+        <section className="py-12 text-center">
           <ScrollReveal>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: 20, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
-              CORE ENGINE STACK
+            <h3 className="text-xs tracking-[0.2em] font-extrabold text-neutral-500 uppercase mb-8">
+              CORE INFRASTRUCTURE STACK
             </h3>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div className="flex flex-wrap gap-3 justify-center">
               {techStack.map((tech) => (
                 <div
                   key={tech.name}
-                  className="glass-pill"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '8px 16px',
-                    borderRadius: 'var(--radius-full)',
-                    background: 'rgba(15,23,42,0.4)',
-                    border: '1px solid var(--glass-border)',
-                    fontSize: '0.76rem',
-                    color: 'var(--text-primary)',
-                    fontWeight: 600,
-                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 border border-white/[0.04] text-xs text-white/80 font-mono font-medium hover:border-cyan-500/30 hover:text-white transition-all duration-300 cursor-default"
                 >
                   <span>{tech.icon}</span>
                   <span>{tech.name}</span>
@@ -348,29 +380,28 @@ export default function Landing() {
           </ScrollReveal>
         </section>
 
-        {/* ── 9. Holographic Call-To-Action ── */}
-        <section style={{ marginBottom: 80 }}>
+        {/* ── SECTION 6: High-Class Call-To-Action ── */}
+        <section className="py-16 pb-24">
           <ScrollReveal>
-            <div className="holo-cta-card">
-              <div className="holo-cta-glow" />
-              <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '50px 30px' }}>
-                <span className="logo-icon" style={{ fontSize: '2.5rem', marginBottom: 16, display: 'inline-block', filter: 'drop-shadow(0 0 10px rgba(34, 211, 238, 0.4))' }}>
-                  🛡️
-                </span>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: 12 }}>
-                  Secure Your Network Infrastructure Today
-                </h2>
-                <p style={{ color: 'var(--text-secondary)', maxWidth: 600, margin: '0 auto 28px', fontSize: '0.88rem', lineHeight: 1.6 }}>
-                  Launch autonomous model training loops and observe real-time cyber defense simulations inside our advanced terminal workspace.
-                </p>
-                <button
-                  className="btn btn-primary btn-lg"
-                  onClick={handleStart}
-                  style={{ display: 'inline-flex', padding: '16px 40px', fontSize: '0.94rem' }}
-                >
-                  🚀 Launch SOC Terminal Workspace
-                </button>
-              </div>
+            <div className="relative rounded-2xl border border-white/[0.06] bg-gradient-to-b from-zinc-950 to-black p-10 md:p-16 overflow-hidden text-center shadow-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(34,211,238,0.1),transparent_70%)]" />
+              
+              <span className="text-3xl mb-6 inline-block filter drop-shadow-[0_0_12px_rgba(34,211,238,0.4)]">
+                🛡️
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 relative z-10 leading-tight">
+                Secure Your Network Infrastructure Today
+              </h2>
+              <p className="text-sm text-neutral-400 font-light max-w-xl mx-auto mb-8 relative z-10 leading-relaxed">
+                Launch autonomous model training loops and observe real-time cyber defense simulations inside our advanced terminal workspace.
+              </p>
+              
+              <button
+                className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-bold text-sm shadow-[0_0_30px_rgba(6,182,212,0.25)] transition-all duration-300 hover:-translate-y-0.5 relative z-10"
+                onClick={handleStart}
+              >
+                🚀 Open SOC Command Workspace
+              </button>
             </div>
           </ScrollReveal>
         </section>

@@ -143,10 +143,8 @@ function AppContent() {
 
   return (
     <div className="app-layout">
-      <MatrixBackground attackActive={isAttack} intensity={intensity} />
       <AuroraBackground />
       <ParticleField attackActive={isAttack} intensity={intensity} />
-      <InteractiveGrid />
 
       {/* Global Glass Top Navbar */}
       <header className="global-navbar">
