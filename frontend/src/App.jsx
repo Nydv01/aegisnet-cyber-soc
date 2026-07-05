@@ -9,8 +9,8 @@ import Models from './components/Models';
 import Auth from './components/Auth';
 import MatrixBackground from './components/MatrixBackground';
 import InteractiveDock from './components/InteractiveDock';
+import GridBeamBackground from './components/GridBeamBackground';
 import AuroraBackground from './components/AuroraBackground';
-import ParticleField from './components/ParticleField';
 import PageTransition from './components/PageTransition';
 import CommandPalette from './components/CommandPalette';
 import { ToastProvider, useToast } from './components/ToastNotification';
@@ -143,8 +143,9 @@ function AppContent() {
 
   return (
     <div className="app-layout">
+      <MatrixBackground attackActive={isAttack} intensity={intensity} />
       <AuroraBackground />
-      <ParticleField attackActive={isAttack} intensity={intensity} />
+      <GridBeamBackground attackActive={isAttack} intensity={intensity} />
 
       {/* Global Glass Top Navbar */}
       <header className="global-navbar">
