@@ -21,6 +21,9 @@ import json
 import asyncio
 from datetime import datetime, timedelta
 from typing import Optional, List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from fastapi import (
     FastAPI,

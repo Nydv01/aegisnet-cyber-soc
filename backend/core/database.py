@@ -14,6 +14,9 @@ Skills Showcased:
 import os
 from datetime import datetime
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from sqlalchemy import (
     create_engine,
