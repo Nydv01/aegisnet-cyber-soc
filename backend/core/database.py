@@ -161,7 +161,7 @@ def init_db():
         existing = db.query(UserSession).filter_by(username="admin").first()
         if not existing:
             from passlib.context import CryptContext
-            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
             admin = UserSession(
                 username="admin",
                 hashed_password=pwd_context.hash("aegisnet2024"),
