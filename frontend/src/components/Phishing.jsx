@@ -4,6 +4,7 @@ import ScrollReveal from './ScrollReveal';
 import AnimatedNumber from './AnimatedNumber';
 import TextScramble from './TextScramble';
 import ShinyText from './ShinyText';
+import { AnimatedBorderCard, TerminalTextStream, CyberButton } from './ui/cyber-effects';
 
 const API = 'http://localhost:8000';
 
@@ -195,10 +196,10 @@ export default function Phishing() {
       <ScrollReveal>
         <div className="page-header">
           <h1>
-            <ShinyText>🔍 Phishing URL Classifier</ShinyText>
+            🔍 <TerminalTextStream text="Phishing URL Classifier" speed={40} />
           </h1>
           <p>
-            <TextScramble delay={100}>Multi-feature lexical token modeling using TF-IDF + 18 hand-crafted features via trained Logistic Regression</TextScramble>
+            <TextScramble delay={200}>Multi-feature lexical token modeling using TF-IDF + 18 hand-crafted features via trained Logistic Regression</TextScramble>
           </p>
         </div>
       </ScrollReveal>
@@ -241,87 +242,89 @@ export default function Phishing() {
 
       {/* ── URL Input ── */}
       <ScrollReveal delay={50}>
-        <SpotlightCard style={{ marginBottom: 20 }}>
-          <div className="card-header">
-            <h2>🌐 Analyze Web Address</h2>
-            <button
-              className={`btn btn-ghost btn-sm`}
-              onClick={() => setBatchMode(!batchMode)}
-            >
-              {batchMode ? '📝 Single Scan' : '📋 Batch Scan'}
-            </button>
-          </div>
+        <AnimatedBorderCard style={{ marginBottom: 20 }}>
+          <div style={{ padding: 20 }}>
+            <div className="card-header">
+              <h2>🌐 Analyze Web Address</h2>
+              <CyberButton
+                variant="primary"
+                onClick={() => setBatchMode(!batchMode)}
+              >
+                {batchMode ? '📝 Single Scan' : '📋 Batch Scan'}
+              </CyberButton>
+            </div>
 
-          {!batchMode ? (
-            <>
-              <div className="input-group">
-                <input
-                  type="text"
-                  className="text-input"
-                  placeholder="Enter URL to inspect (e.g., http://secure-login-paypal.xyz/verify)"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  id="url-input"
-                />
-                <button
-                  className="btn btn-primary"
-                  onClick={scanUrl}
-                  disabled={loading || !url.trim()}
-                  id="scan-btn"
-                >
-                  {loading ? <span className="spinner" /> : '🔍 Analyze'}
-                </button>
-              </div>
-
-              {/* Quick test URLs */}
-              <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', alignSelf: 'center', fontWeight: 600 }}>
-                  TEST CASES:
-                </span>
-                {[
-                  'https://google.com/search?q=test',
-                  'http://secure-login-paypal.xyz/verify',
-                  'https://github.com/features',
-                  'http://192.168.1.1/admin/login.php',
-                  'http://amaz0n-secure.club/update/verify',
-                ].map((testUrl) => (
-                  <button
-                    key={testUrl}
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => { setUrl(testUrl); setResult(null); }}
-                    style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}
+            {!batchMode ? (
+              <>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="text-input"
+                    placeholder="Enter URL to inspect (e.g., http://secure-login-paypal.xyz/verify)"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    id="url-input"
+                  />
+                  <CyberButton
+                    variant="primary"
+                    onClick={scanUrl}
+                    disabled={loading || !url.trim()}
+                    id="scan-btn"
                   >
-                    {testUrl.length > 35 ? testUrl.substring(0, 35) + '...' : testUrl}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : (
-            /* Batch mode */
-            <>
-              <textarea
-                className="batch-scan-textarea"
-                placeholder="Enter one URL per line..."
-                value={batchUrls}
-                onChange={(e) => setBatchUrls(e.target.value)}
-                rows={6}
-              />
-              <div style={{ marginTop: 12, display: 'flex', gap: 10, alignItems: 'center' }}>
-                <button
-                  className="btn btn-primary"
-                  onClick={scanBatch}
-                  disabled={batchLoading || !batchUrls.trim()}
-                >
-                  {batchLoading ? <span className="spinner" /> : `🔍 Scan ${batchUrls.split('\n').filter(Boolean).length} URLs`}
-                </button>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                  One URL per line
-                </span>
-              </div>
-            </>
-          )}
-        </SpotlightCard>
+                    {loading ? <span className="spinner" /> : '🔍 Analyze'}
+                  </CyberButton>
+                </div>
+
+                {/* Quick test URLs */}
+                <div style={{ marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', alignSelf: 'center', fontWeight: 600 }}>
+                    TEST CASES:
+                  </span>
+                  {[
+                    'https://google.com/search?q=test',
+                    'http://secure-login-paypal.xyz/verify',
+                    'https://github.com/features',
+                    'http://192.168.1.1/admin/login.php',
+                    'http://amaz0n-secure.club/update/verify',
+                  ].map((testUrl) => (
+                    <button
+                      key={testUrl}
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => { setUrl(testUrl); setResult(null); }}
+                      style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}
+                    >
+                      {testUrl.length > 35 ? testUrl.substring(0, 35) + '...' : testUrl}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              /* Batch mode */
+              <>
+                <textarea
+                  className="batch-scan-textarea"
+                  placeholder="Enter one URL per line..."
+                  value={batchUrls}
+                  onChange={(e) => setBatchUrls(e.target.value)}
+                  rows={6}
+                />
+                <div style={{ marginTop: 12, display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <CyberButton
+                    variant="primary"
+                    onClick={scanBatch}
+                    disabled={batchLoading || !batchUrls.trim()}
+                  >
+                    {batchLoading ? <span className="spinner" /> : `🔍 Scan ${batchUrls.split('\n').filter(Boolean).length} URLs`}
+                  </CyberButton>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    One URL per line
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </AnimatedBorderCard>
       </ScrollReveal>
 
       {/* ── Scanning Animation ── */}
@@ -410,179 +413,183 @@ export default function Phishing() {
       {/* ── Scan Result ── */}
       {result && !loading && (
         <ScrollReveal>
-          <SpotlightCard className={`scan-result ${result.is_phishing ? 'danger' : 'safe'}`}>
-            <div className="dashboard-grid" style={{ gridTemplateColumns: '1.4fr 1fr' }}>
-              {/* Verdict */}
-              <div>
-                <div className="scan-verdict">
-                  <div className={`verdict-icon ${result.is_phishing ? 'danger' : 'safe'}`} style={{ color: gaugeColor }}>
-                    {result.is_phishing ? '🚫' : '✅'}
-                  </div>
-                  <div className="verdict-text">
-                    <h3 style={{ color: result.is_phishing ? '#ef4444' : '#10b981' }}>
-                      <TextScramble scrambleChars="01">{result.label}</TextScramble>
-                    </h3>
-                    <p>Model Confidence: {(result.confidence * 100).toFixed(1)}%</p>
-                  </div>
-                </div>
-
-                {/* URL with token heatmap */}
-                <URLTokenHeatmap url={result.url} isPhishing={result.is_phishing} features={features} />
-              </div>
-
-              {/* Threat Score Gauge */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="threat-score-circle" style={{ color: gaugeColor }}>
-                  <svg viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)' }}>
-                    <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--bg-tertiary)" strokeWidth="8" />
-                    <circle
-                      cx="60" cy="60" r={radius}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={offset}
-                      style={{ transition: 'stroke-dashoffset 0.8s ease', filter: `drop-shadow(0 0 8px ${gaugeColor})` }}
-                    />
-                  </svg>
-                </div>
-                <div style={{ textAlign: 'center', marginTop: -20 }}>
-                  <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: gaugeColor }}>
-                    <AnimatedNumber value={threatScore * 100} />%
-                  </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                    Threat Score
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Weight Visualizations */}
-            <div style={{ marginTop: 24, borderTop: '1px solid var(--glass-border)', paddingTop: 20 }}>
-              <h3 style={{ fontSize: '0.82rem', fontWeight: 700, marginBottom: 16, letterSpacing: '0.02em' }}>
-                📊 Lexical Feature Weight Analysis
-              </h3>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {Object.entries(features).map(([key, value]) => {
-                  const numVal = typeof value === 'number' ? value : 0;
-                  const barWidth = `${Math.min(100, Math.max(4, (numVal / maxFeatureVal) * 100))}%`;
-
-                  return (
-                    <div key={key} className="feature-importance-bar">
-                      <div className="fi-bar-label" style={{ minWidth: 140, textTransform: 'capitalize' }}>
-                        {key.replace(/_/g, ' ')}
-                      </div>
-                      <div className="fi-bar-track">
-                        <div
-                          className="fi-bar-fill"
-                          style={{
-                            width: barWidth,
-                            background: result.is_phishing 
-                              ? 'linear-gradient(90deg, rgba(239,68,68,0.6), var(--neon-red))' 
-                              : 'linear-gradient(90deg, var(--neon-cyan), var(--neon-blue))',
-                            boxShadow: result.is_phishing 
-                              ? '0 0 8px rgba(239, 68, 68, 0.3)' 
-                              : '0 0 8px rgba(34, 211, 238, 0.3)',
-                          }}
-                        />
-                      </div>
-                      <div className="fi-bar-value">
-                        {numVal.toFixed(2)}
-                      </div>
+          <AnimatedBorderCard className={`scan-result ${result.is_phishing ? 'danger' : 'safe'}`}>
+            <div style={{ padding: 20 }}>
+              <div className="dashboard-grid" style={{ gridTemplateColumns: '1.4fr 1fr' }}>
+                {/* Verdict */}
+                <div>
+                  <div className="scan-verdict">
+                    <div className={`verdict-icon ${result.is_phishing ? 'danger' : 'safe'}`} style={{ color: gaugeColor }}>
+                      {result.is_phishing ? '🚫' : '✅'}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Classification details */}
-            {result.classification_details && (
-              <div style={{ marginTop: 20, borderTop: '1px solid var(--glass-border)', paddingTop: 16 }}>
-                <h3 style={{ fontSize: '0.78rem', fontWeight: 700, marginBottom: 12 }}>🔬 Classification Details</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
-                  {Object.entries(result.classification_details).map(([key, val]) => (
-                    <div key={key} style={{ padding: 10, background: 'rgba(15,23,42,0.3)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
-                      <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                        {key.replace(/_/g, ' ')}
-                      </div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', marginTop: 4 }}>
-                        {typeof val === 'number' ? val.toFixed(4) : String(val)}
-                      </div>
+                    <div className="verdict-text">
+                      <h3 style={{ color: result.is_phishing ? '#ef4444' : '#10b981' }}>
+                        <TextScramble scrambleChars="01">{result.label}</TextScramble>
+                      </h3>
+                      <p>Model Confidence: {(result.confidence * 100).toFixed(1)}%</p>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* URL with token heatmap */}
+                  <URLTokenHeatmap url={result.url} isPhishing={result.is_phishing} features={features} />
+                </div>
+
+                {/* Threat Score Gauge */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="threat-score-circle" style={{ color: gaugeColor }}>
+                    <svg viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)' }}>
+                      <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--bg-tertiary)" strokeWidth="8" />
+                      <circle
+                        cx="60" cy="60" r={radius}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={offset}
+                        style={{ transition: 'stroke-dashoffset 0.8s ease', filter: `drop-shadow(0 0 8px ${gaugeColor})` }}
+                      />
+                    </svg>
+                  </div>
+                  <div style={{ textAlign: 'center', marginTop: -20 }}>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: gaugeColor }}>
+                      <AnimatedNumber value={threatScore * 100} />%
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      Threat Score
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
-          </SpotlightCard>
+
+              {/* Feature Weight Visualizations */}
+              <div style={{ marginTop: 24, borderTop: '1px solid var(--glass-border)', paddingTop: 20 }}>
+                <h3 style={{ fontSize: '0.82rem', fontWeight: 700, marginBottom: 16, letterSpacing: '0.02em' }}>
+                  📊 Lexical Feature Weight Analysis
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {Object.entries(features).map(([key, value]) => {
+                    const numVal = typeof value === 'number' ? value : 0;
+                    const barWidth = `${Math.min(100, Math.max(4, (numVal / maxFeatureVal) * 100))}%`;
+
+                    return (
+                      <div key={key} className="feature-importance-bar">
+                        <div className="fi-bar-label" style={{ minWidth: 140, textTransform: 'capitalize' }}>
+                          {key.replace(/_/g, ' ')}
+                        </div>
+                        <div className="fi-bar-track">
+                          <div
+                            className="fi-bar-fill"
+                            style={{
+                              width: barWidth,
+                              background: result.is_phishing 
+                                ? 'linear-gradient(90deg, rgba(239,68,68,0.6), var(--neon-red))' 
+                                : 'linear-gradient(90deg, var(--neon-cyan), var(--neon-blue))',
+                              boxShadow: result.is_phishing 
+                                ? '0 0 8px rgba(239, 68, 68, 0.3)' 
+                                : '0 0 8px rgba(34, 211, 238, 0.3)',
+                            }}
+                          />
+                        </div>
+                        <div className="fi-bar-value">
+                          {numVal.toFixed(2)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Classification details */}
+              {result.classification_details && (
+                <div style={{ marginTop: 20, borderTop: '1px solid var(--glass-border)', paddingTop: 16 }}>
+                  <h3 style={{ fontSize: '0.78rem', fontWeight: 700, marginBottom: 12 }}>🔬 Classification Details</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+                    {Object.entries(result.classification_details).map(([key, val]) => (
+                      <div key={key} style={{ padding: 10, background: 'rgba(15,23,42,0.3)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
+                        <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                          {key.replace(/_/g, ' ')}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', marginTop: 4 }}>
+                          {typeof val === 'number' ? val.toFixed(4) : String(val)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </AnimatedBorderCard>
         </ScrollReveal>
       )}
 
       {/* ── Scan History ── */}
       <ScrollReveal delay={100}>
-        <SpotlightCard style={{ marginTop: 20 }}>
-          <div className="card-header">
-            <h2>📜 Inspection Registry</h2>
-            <span className="card-badge badge-info">{history.length} Inspected</span>
-          </div>
+        <AnimatedBorderCard style={{ marginTop: 20 }}>
+          <div style={{ padding: 20 }}>
+            <div className="card-header">
+              <h2>📜 Inspection Registry</h2>
+              <span className="card-badge badge-info">{history.length} Inspected</span>
+            </div>
 
-          {history.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">🔍</div>
-              <h3>No URL History</h3>
-              <p>Type a URL address above and click inspect to log results in the registry</p>
-            </div>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="log-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>URL</th>
-                    <th>Verdict</th>
-                    <th>Confidence</th>
-                    <th>Threat</th>
-                    <th>Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map((item) => (
-                    <tr key={item.id} onClick={() => { setUrl(item.url); setResult(null); }} style={{ cursor: 'pointer' }}>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-                        #{item.id}
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {item.url}
-                      </td>
-                      <td>
-                        <span className={`card-badge ${item.is_phishing ? 'badge-alert' : 'badge-live'}`}>
-                          {item.is_phishing ? '🚫 Phishing' : '✅ Safe'}
-                        </span>
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
-                        {(item.confidence * 100).toFixed(1)}%
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <div className="health-bar-track" style={{ width: 50, height: 5 }}>
-                            <div className="health-bar-fill" style={{
-                              width: `${(item.threat_score || 0) * 100}%`,
-                              background: (item.threat_score || 0) > 0.7 ? 'var(--neon-red)' : (item.threat_score || 0) > 0.4 ? 'var(--neon-orange)' : 'var(--neon-green)',
-                            }} />
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
-                        {item.scanned_at ? new Date(item.scanned_at).toLocaleTimeString() : '—'}
-                      </td>
+            {history.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">🔍</div>
+                <h3>No URL History</h3>
+                <p>Type a URL address above and click inspect to log results in the registry</p>
+              </div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table className="log-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>URL</th>
+                      <th>Verdict</th>
+                      <th>Confidence</th>
+                      <th>Threat</th>
+                      <th>Time</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </SpotlightCard>
+                  </thead>
+                  <tbody>
+                    {history.map((item) => (
+                      <tr key={item.id} onClick={() => { setUrl(item.url); setResult(null); }} style={{ cursor: 'pointer' }}>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>
+                          #{item.id}
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {item.url}
+                        </td>
+                        <td>
+                          <span className={`card-badge ${item.is_phishing ? 'badge-alert' : 'badge-live'}`}>
+                            {item.is_phishing ? '🚫 Phishing' : '✅ Safe'}
+                          </span>
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                          {(item.confidence * 100).toFixed(1)}%
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <div className="health-bar-track" style={{ width: 50, height: 5 }}>
+                              <div className="health-bar-fill" style={{
+                                width: `${(item.threat_score || 0) * 100}%`,
+                                background: (item.threat_score || 0) > 0.7 ? 'var(--neon-red)' : (item.threat_score || 0) > 0.4 ? 'var(--neon-orange)' : 'var(--neon-green)',
+                              }} />
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
+                          {item.scanned_at ? new Date(item.scanned_at).toLocaleTimeString() : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </AnimatedBorderCard>
       </ScrollReveal>
     </div>
   );

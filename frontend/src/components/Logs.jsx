@@ -4,6 +4,7 @@ import ScrollReveal from './ScrollReveal';
 import AnimatedNumber from './AnimatedNumber';
 import TextScramble from './TextScramble';
 import ShinyText from './ShinyText';
+import { AnimatedBorderCard, TerminalTextStream, CyberButton } from './ui/cyber-effects';
 
 const API = 'http://localhost:8000';
 
@@ -139,10 +140,10 @@ export default function Logs() {
       <ScrollReveal>
         <div className="page-header">
           <h1>
-            <ShinyText>📋 Security Ledger</ShinyText>
+            📋 <TerminalTextStream text="Security Ledger" speed={40} />
           </h1>
           <p>
-            <TextScramble delay={100}>Inspect firewall activity, packet alerts, and machine learning engine reports in real-time</TextScramble>
+            <TextScramble delay={200}>Inspect firewall activity, packet alerts, and machine learning engine reports in real-time</TextScramble>
           </p>
         </div>
       </ScrollReveal>
@@ -217,7 +218,7 @@ export default function Logs() {
               </svg>
               <div className="donut-center-label">
                 <div className="donut-value">{logs.length}</div>
-                <div className="donut-label">Events</div>
+            <div className="donut-label">Events</div>
               </div>
             </div>
           </SpotlightCard>
@@ -226,8 +227,8 @@ export default function Logs() {
 
       {/* ── Filters ── */}
       <ScrollReveal delay={100}>
-        <SpotlightCard style={{ marginBottom: 20 }}>
-          <div className="filter-bar">
+        <AnimatedBorderCard style={{ marginBottom: 20 }}>
+          <div style={{ padding: 15 }} className="filter-bar">
             <input
               type="text"
               className="text-input"
@@ -281,147 +282,137 @@ export default function Logs() {
               )}
             </div>
 
-            <div className="export-btn-group" style={{ marginLeft: 'auto' }}>
-              <button className="btn btn-ghost btn-sm" onClick={exportCSV} title="Export CSV">
+            <div className="export-btn-group" style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+              <CyberButton variant="ghost" onClick={exportCSV} title="Export CSV">
                 📄 CSV
-              </button>
-              <button className="btn btn-ghost btn-sm" onClick={exportJSON} title="Export JSON">
+              </CyberButton>
+              <CyberButton variant="ghost" onClick={exportJSON} title="Export JSON">
                 📋 JSON
-              </button>
+              </CyberButton>
             </div>
 
-            <button className="btn btn-ghost btn-sm" onClick={fetchLogs} disabled={loading}>
+            <CyberButton variant="ghost" onClick={fetchLogs} disabled={loading}>
               {loading ? <span className="spinner" /> : '🔄'}
-            </button>
+            </CyberButton>
 
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
               {sorted.length}/{logs.length}
             </span>
           </div>
-        </SpotlightCard>
+        </AnimatedBorderCard>
       </ScrollReveal>
 
       {/* ── Log Table ── */}
       <ScrollReveal delay={150}>
-        <SpotlightCard style={{ overflow: 'auto', maxHeight: '65vh' }}>
-          {sorted.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">📭</div>
-              <h3>No Ledger Records</h3>
-              <p>
-                {search ? 'Try adjusting your search filters' : 'Security events will be logged here in real-time'}
-              </p>
-            </div>
-          ) : (
-            <table className="log-table">
-              <thead>
-                <tr>
-                  <th className={sortClass('timestamp')} onClick={() => handleSort('timestamp')}>Time</th>
-                  <th className={sortClass('event_id')} onClick={() => handleSort('event_id')}>ID</th>
-                  <th className={sortClass('severity')} onClick={() => handleSort('severity')}>Severity</th>
-                  <th className={sortClass('event_type')} onClick={() => handleSort('event_type')}>Type</th>
-                  <th className={sortClass('source_ip')} onClick={() => handleSort('source_ip')}>Source</th>
-                  <th>Dest</th>
-                  <th>Message</th>
-                  <th style={{ width: 30 }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {sorted.map((log, i) => (
-                  <>
-                    <tr
-                      key={`row-${i}`}
-                      onClick={() => setExpandedRow(expandedRow === i ? null : i)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
-                        {log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : '--'}
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                        {log.event_id}
-                      </td>
-                      <td>
-                        <span className={`severity-badge ${log.severity}`}>
-                          {log.severity}
-                        </span>
-                      </td>
-                      <td style={{ fontSize: '0.75rem', textTransform: 'capitalize' }}>
-                        {log.event_type === 'attack' && '⚔️ '}
-                        {log.event_type === 'defense' && '🛡️ '}
-                        {log.event_type === 'system' && '⚙️ '}
-                        {log.event_type === 'traffic' && '📡 '}
-                        {log.event_type}
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem' }}>
-                        {log.source_ip}
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem' }}>
-                        {log.destination_ip}
-                      </td>
-                      <td style={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.78rem' }}>
-                        {log.message}
-                      </td>
-                      <td style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-dim)' }}>
-                        {expandedRow === i ? '▲' : '▼'}
-                      </td>
-                    </tr>
-
-                    {/* Expanded detail row */}
-                    {expandedRow === i && (
-                      <tr key={`detail-${i}`} className="log-expand-row">
-                        <td colSpan={8}>
-                          <div className="log-expand-content">
-                            <div className="log-detail-grid">
-                              <div>
-                                <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Event ID</div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>{log.event_id}</div>
-                              </div>
-                              <div>
-                                <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Timestamp</div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>
-                                  {log.timestamp ? new Date(log.timestamp).toLocaleString() : '—'}
-                                </div>
-                              </div>
-                              <div>
-                                <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Source IP</div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--neon-cyan)' }}>{log.source_ip}</div>
-                              </div>
-                              <div>
-                                <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Destination IP</div>
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--neon-cyan)' }}>{log.destination_ip}</div>
-                              </div>
-                              <div style={{ gridColumn: 'span 2' }}>
-                                <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Full Message</div>
-                                <div style={{ fontSize: '0.82rem', lineHeight: 1.5 }}>{log.message}</div>
-                              </div>
-                              {log.details && (
-                                <div style={{ gridColumn: 'span 2' }}>
-                                  <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Details</div>
-                                  <pre style={{
-                                    fontSize: '0.72rem',
-                                    fontFamily: 'var(--font-mono)',
-                                    background: 'rgba(6,11,24,0.5)',
-                                    padding: 10,
-                                    borderRadius: 'var(--radius-xs)',
-                                    overflow: 'auto',
-                                    maxHeight: 120,
-                                    color: 'var(--text-secondary)',
-                                  }}>
-                                    {JSON.stringify(log.details, null, 2)}
-                                  </pre>
-                                </div>
-                              )}
-                            </div>
-                          </div>
+        <AnimatedBorderCard style={{ maxHeight: '65vh', overflow: 'hidden' }}>
+          <div style={{ padding: 20, overflow: 'auto', maxHeight: '63vh' }}>
+            {sorted.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📭</div>
+                <h3>No Ledger Records</h3>
+                <p>
+                  {search ? 'Try adjusting your search filters' : 'Security events will be logged here in real-time'}
+                </p>
+              </div>
+            ) : (
+              <table className="log-table">
+                <thead>
+                  <tr>
+                    <th className={sortClass('timestamp')} onClick={() => handleSort('timestamp')}>Time</th>
+                    <th className={sortClass('event_id')} onClick={() => handleSort('event_id')}>Event ID</th>
+                    <th className={sortClass('event_type')} onClick={() => handleSort('event_type')}>Type</th>
+                    <th className={sortClass('severity')} onClick={() => handleSort('severity')}>Severity</th>
+                    <th style={{ textAlign: 'left' }}>Details</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sorted.map((log) => (
+                    <>
+                      <tr
+                        key={log.id}
+                        className={`log-row-tr ${expandedRow === log.id ? 'expanded' : ''}`}
+                        onClick={() => setExpandedRow(expandedRow === log.id ? null : log.id)}
+                      >
+                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+                          {log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : '—'}
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', fontWeight: 600 }}>
+                          {log.event_id}
+                        </td>
+                        <td>
+                          <span className={`card-badge badge-${log.event_type}`}>
+                            {log.event_type}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`card-badge badge-${log.severity}`}>
+                            {log.severity}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'left', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {log.message}
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--neon-cyan)' }}>
+                          {log.source_ip || '—'}
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--neon-cyan)' }}>
+                          {log.destination_ip || '—'}
                         </td>
                       </tr>
-                    )}
-                  </>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </SpotlightCard>
+                      {expandedRow === log.id && (
+                        <tr className="detail-row">
+                          <td colSpan={7}>
+                            <div className="detail-row-content">
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14 }}>
+                                <div>
+                                  <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Timestamp</div>
+                                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>
+                                    {log.timestamp ? new Date(log.timestamp).toLocaleString() : '—'}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Source IP</div>
+                                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--neon-cyan)' }}>{log.source_ip}</div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Destination IP</div>
+                                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--neon-cyan)' }}>{log.destination_ip}</div>
+                                </div>
+                                <div style={{ gridColumn: 'span 2' }}>
+                                  <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Full Message</div>
+                                  <div style={{ fontSize: '0.82rem', lineHeight: 1.5 }}>{log.message}</div>
+                                </div>
+                                {log.details && (
+                                  <div style={{ gridColumn: 'span 2' }}>
+                                    <div style={{ fontSize: '0.6rem', color: 'var(--text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Details</div>
+                                    <pre style={{
+                                      fontSize: '0.72rem',
+                                      fontFamily: 'var(--font-mono)',
+                                      background: 'rgba(6,11,24,0.5)',
+                                      padding: 10,
+                                      borderRadius: 'var(--radius-xs)',
+                                      overflow: 'auto',
+                                      maxHeight: 120,
+                                      color: 'var(--text-secondary)',
+                                    }}>
+                                      {JSON.stringify(log.details, null, 2)}
+                                    </pre>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </AnimatedBorderCard>
       </ScrollReveal>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SpotlightCard from './SpotlightCard';
 import ScrollReveal from './ScrollReveal';
 import ShinyText from './ShinyText';
+import { AnimatedBorderCard, TerminalTextStream } from './ui/cyber-effects';
 
 const API = 'http://localhost:8000';
 
@@ -275,152 +276,161 @@ export default function Models() {
   return (
     <div>
       <div className="page-header">
-        <h1><ShinyText>🧠 AI / ML Models</ShinyText></h1>
+        <h1>
+          🧠 <TerminalTextStream text="AI / ML Models" speed={40} />
+        </h1>
         <p>Trained scikit-learn classifiers, reinforcement learning agents, and model performance analytics</p>
       </div>
 
       {/* ── Training Pipeline ── */}
       <ScrollReveal>
-        <SpotlightCard style={{ marginBottom: 20 }}>
-          <div className="card-header">
-            <h2>📐 Training Pipeline</h2>
-            <span className="card-badge badge-info">END-TO-END</span>
+        <AnimatedBorderCard style={{ marginBottom: 20 }}>
+          <div style={{ padding: 20 }}>
+            <div className="card-header">
+              <h2>📐 Training Pipeline</h2>
+              <span className="card-badge badge-info">END-TO-END</span>
+            </div>
+            <PipelineDiagram steps={[
+              { icon: '📊', label: 'Synthetic Data' },
+              { icon: '🔧', label: 'Feature Engineering' },
+              { icon: '⚖️', label: 'StandardScaler' },
+              { icon: '🧠', label: 'Model Training' },
+              { icon: '📈', label: 'Cross-Validation' },
+              { icon: '✅', label: 'Evaluation' },
+              { icon: '💾', label: 'Serialization' },
+            ]} />
           </div>
-          <PipelineDiagram steps={[
-            { icon: '📊', label: 'Synthetic Data' },
-            { icon: '🔧', label: 'Feature Engineering' },
-            { icon: '⚖️', label: 'StandardScaler' },
-            { icon: '🧠', label: 'Model Training' },
-            { icon: '📈', label: 'Cross-Validation' },
-            { icon: '✅', label: 'Evaluation' },
-            { icon: '💾', label: 'Serialization' },
-          ]} />
-        </SpotlightCard>
+        </AnimatedBorderCard>
       </ScrollReveal>
 
       {/* ── Model Cards Grid ── */}
       <div className="models-page-grid">
         {/* IDS Model */}
         <ScrollReveal delay={100}>
-          <SpotlightCard style={{ height: '100%' }}>
-            <div className="card-header">
-              <h2>🔍 Intrusion Detection System</h2>
-              <span className="card-badge badge-live">ACTIVE</span>
-            </div>
+          <AnimatedBorderCard style={{ height: '100%' }}>
+            <div style={{ padding: 20 }}>
+              <div className="card-header">
+                <h2>🔍 Intrusion Detection System</h2>
+                <span className="card-badge badge-live">ACTIVE</span>
+              </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Model</div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--neon-cyan)' }}>{ids.model}</div>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Model</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--neon-cyan)' }}>{ids.model}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estimators</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>{ids.n_estimators}</div>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estimators</div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>{ids.n_estimators}</div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
+                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-green)' }}>
+                      {(ids.accuracy * 100).toFixed(1)}%
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Accuracy</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(34, 211, 238, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(34, 211, 238, 0.1)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-cyan)' }}>
+                      {(ids.cv_accuracy_mean * 100).toFixed(1)}%
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>CV Mean</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(168, 85, 247, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(168, 85, 247, 0.1)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-purple-bright)' }}>
+                      {ids.roc_auc_weighted?.toFixed(4)}
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>ROC-AUC</div>
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
-                <div style={{ textAlign: 'center', padding: 10, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-green)' }}>
-                    {(ids.accuracy * 100).toFixed(1)}%
-                  </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Accuracy</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: 10, background: 'rgba(34, 211, 238, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(34, 211, 238, 0.1)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-cyan)' }}>
-                    {(ids.cv_accuracy_mean * 100).toFixed(1)}%
-                  </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>CV Mean</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: 10, background: 'rgba(168, 85, 247, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(168, 85, 247, 0.1)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-purple-bright)' }}>
-                    {ids.roc_auc_weighted?.toFixed(4)}
-                  </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>ROC-AUC</div>
-                </div>
-              </div>
+              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Confusion Matrix</h3>
+              <ConfusionMatrix matrix={ids.confusion_matrix} labels={ids.classes} />
+
+              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>Feature Importance</h3>
+              <FeatureImportanceChart features={ids.feature_importance} maxBars={6} />
+
+              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>ROC Curve</h3>
+              <ROCCurve auc={ids.roc_auc_weighted || 0.999} />
             </div>
-
-            <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Confusion Matrix</h3>
-            <ConfusionMatrix matrix={ids.confusion_matrix} labels={ids.classes} />
-
-            <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>Feature Importance</h3>
-            <FeatureImportanceChart features={ids.feature_importance} maxBars={6} />
-
-            <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>ROC Curve</h3>
-            <ROCCurve auc={ids.roc_auc_weighted || 0.999} />
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
 
         {/* Phishing Model */}
         <ScrollReveal delay={200}>
-          <SpotlightCard style={{ height: '100%' }}>
-            <div className="card-header">
-              <h2>🌐 Phishing URL Classifier</h2>
-              <span className="card-badge badge-live">ACTIVE</span>
-            </div>
+          <AnimatedBorderCard style={{ height: '100%' }}>
+            <div style={{ padding: 20 }}>
+              <div className="card-header">
+                <h2>🌐 Phishing URL Classifier</h2>
+                <span className="card-badge badge-live">ACTIVE</span>
+              </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Model</div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--neon-cyan)' }}>{phishing.model}</div>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Model</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--neon-cyan)' }}>{phishing.model}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Features</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>{phishing.total_features}</div>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Features</div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>{phishing.total_features}</div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
+                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-green)' }}>
+                      {(phishing.accuracy * 100).toFixed(1)}%
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Accuracy</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(34, 211, 238, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(34, 211, 238, 0.1)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-cyan)' }}>
+                      {(phishing.cv_accuracy_mean * 100).toFixed(1)}%
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>CV Mean</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(168, 85, 247, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(168, 85, 247, 0.1)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-purple-bright)' }}>
+                      {phishing.roc_auc?.toFixed(4)}
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>ROC-AUC</div>
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
-                <div style={{ textAlign: 'center', padding: 10, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-green)' }}>
-                    {(phishing.accuracy * 100).toFixed(1)}%
-                  </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Accuracy</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: 10, background: 'rgba(34, 211, 238, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(34, 211, 238, 0.1)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-cyan)' }}>
-                    {(phishing.cv_accuracy_mean * 100).toFixed(1)}%
-                  </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>CV Mean</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: 10, background: 'rgba(168, 85, 247, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(168, 85, 247, 0.1)' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-purple-bright)' }}>
-                    {phishing.roc_auc?.toFixed(4)}
-                  </div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>ROC-AUC</div>
-                </div>
-              </div>
+              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Confusion Matrix</h3>
+              <ConfusionMatrix matrix={phishing.confusion_matrix} labels={['Legitimate', 'Phishing']} />
+
+              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>Feature Pipeline</h3>
+              <PipelineDiagram steps={[
+                { icon: '🔗', label: 'Raw URL' },
+                { icon: '✂️', label: 'Tokenize' },
+                { icon: '📝', label: 'TF-IDF (500)' },
+                { icon: '🔧', label: '18 Hand Features' },
+                { icon: '⚖️', label: 'Scale + Stack' },
+                { icon: '📐', label: 'LogReg Predict' },
+              ]} />
+
+              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>ROC Curve</h3>
+              <ROCCurve auc={phishing.roc_auc || 0.999} />
             </div>
-
-            <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Confusion Matrix</h3>
-            <ConfusionMatrix matrix={phishing.confusion_matrix} labels={['Legitimate', 'Phishing']} />
-
-            <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>Feature Pipeline</h3>
-            <PipelineDiagram steps={[
-              { icon: '🔗', label: 'Raw URL' },
-              { icon: '✂️', label: 'Tokenize' },
-              { icon: '📝', label: 'TF-IDF (500)' },
-              { icon: '🔧', label: '18 Hand Features' },
-              { icon: '⚖️', label: 'Scale + Stack' },
-              { icon: '📐', label: 'LogReg Predict' },
-            ]} />
-
-            <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>ROC Curve</h3>
-            <ROCCurve auc={phishing.roc_auc || 0.999} />
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
       </div>
 
       {/* ── Q-Learning Agent ── */}
       <ScrollReveal delay={300}>
-        <SpotlightCard style={{ marginTop: 20 }}>
-          <div className="card-header">
-            <h2>🤖 Q-Learning Defense Agent</h2>
-            <span className="card-badge badge-info">REINFORCEMENT LEARNING</span>
-          </div>
+        <AnimatedBorderCard style={{ marginTop: 20 }}>
+          <div style={{ padding: 20 }}>
+            <div className="card-header">
+              <h2>🤖 Q-Learning Defense Agent</h2>
+              <span className="card-badge badge-info">REINFORCEMENT LEARNING</span>
+            </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 20 }}>
             {[
@@ -465,61 +475,64 @@ export default function Models() {
                 α=0.1 · γ=0.95 · ε-decay=0.9995 · ε-min=0.05
               </div>
             </div>
+            </div>
           </div>
-        </SpotlightCard>
+        </AnimatedBorderCard>
       </ScrollReveal>
 
       {/* ── Model Comparison Table ── */}
       <ScrollReveal delay={400}>
-        <SpotlightCard style={{ marginTop: 20 }}>
-          <div className="card-header">
-            <h2>📊 Model Comparison</h2>
+        <AnimatedBorderCard style={{ marginTop: 20 }}>
+          <div style={{ padding: 20 }}>
+            <div className="card-header">
+              <h2>📊 Model Comparison</h2>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="model-comparison-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Type</th>
+                    <th>Accuracy</th>
+                    <th>CV Mean</th>
+                    <th>ROC-AUC</th>
+                    <th>Features</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ fontWeight: 700 }}>🔍 IDS Classifier</td>
+                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>RandomForest</td>
+                    <td><span className="metric-highlight excellent">{(ids.accuracy * 100).toFixed(1)}%</span></td>
+                    <td><span className="metric-highlight excellent">{(ids.cv_accuracy_mean * 100).toFixed(1)}%</span></td>
+                    <td><span className="metric-highlight excellent">{ids.roc_auc_weighted?.toFixed(4)}</span></td>
+                    <td>20</td>
+                    <td><span className="card-badge badge-live">LIVE</span></td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 700 }}>🌐 Phishing Classifier</td>
+                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>LogReg + TF-IDF</td>
+                    <td><span className="metric-highlight excellent">{(phishing.accuracy * 100).toFixed(1)}%</span></td>
+                    <td><span className="metric-highlight excellent">{(phishing.cv_accuracy_mean * 100).toFixed(1)}%</span></td>
+                    <td><span className="metric-highlight excellent">{phishing.roc_auc?.toFixed(4)}</span></td>
+                    <td>{phishing.total_features}</td>
+                    <td><span className="card-badge badge-live">LIVE</span></td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 700 }}>🤖 Defense Agent</td>
+                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>Q-Learning</td>
+                    <td><span className="metric-highlight good">{((agent.eval_survival_rate || 0) * 100).toFixed(0)}%</span></td>
+                    <td><span className="metric-highlight good">{agent.eval_avg_health?.toFixed(0)}%</span></td>
+                    <td>—</td>
+                    <td>375×7</td>
+                    <td><span className="card-badge badge-live">LIVE</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table className="model-comparison-table">
-              <thead>
-                <tr>
-                  <th>Model</th>
-                  <th>Type</th>
-                  <th>Accuracy</th>
-                  <th>CV Mean</th>
-                  <th>ROC-AUC</th>
-                  <th>Features</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{ fontWeight: 700 }}>🔍 IDS Classifier</td>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>RandomForest</td>
-                  <td><span className="metric-highlight excellent">{(ids.accuracy * 100).toFixed(1)}%</span></td>
-                  <td><span className="metric-highlight excellent">{(ids.cv_accuracy_mean * 100).toFixed(1)}%</span></td>
-                  <td><span className="metric-highlight excellent">{ids.roc_auc_weighted?.toFixed(4)}</span></td>
-                  <td>20</td>
-                  <td><span className="card-badge badge-live">LIVE</span></td>
-                </tr>
-                <tr>
-                  <td style={{ fontWeight: 700 }}>🌐 Phishing Classifier</td>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>LogReg + TF-IDF</td>
-                  <td><span className="metric-highlight excellent">{(phishing.accuracy * 100).toFixed(1)}%</span></td>
-                  <td><span className="metric-highlight excellent">{(phishing.cv_accuracy_mean * 100).toFixed(1)}%</span></td>
-                  <td><span className="metric-highlight excellent">{phishing.roc_auc?.toFixed(4)}</span></td>
-                  <td>{phishing.total_features}</td>
-                  <td><span className="card-badge badge-live">LIVE</span></td>
-                </tr>
-                <tr>
-                  <td style={{ fontWeight: 700 }}>🤖 Defense Agent</td>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>Q-Learning</td>
-                  <td><span className="metric-highlight good">{((agent.eval_survival_rate || 0) * 100).toFixed(0)}%</span></td>
-                  <td><span className="metric-highlight good">{agent.eval_avg_health?.toFixed(0)}%</span></td>
-                  <td>—</td>
-                  <td>375×7</td>
-                  <td><span className="card-badge badge-live">LIVE</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </SpotlightCard>
+        </AnimatedBorderCard>
       </ScrollReveal>
     </div>
   );
