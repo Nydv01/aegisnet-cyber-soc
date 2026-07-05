@@ -56,7 +56,7 @@ export default function GridBeamBackground({ attackActive = false, intensity = 0
         this.isForward = Math.random() > 0.5;
         this.color = attackActive 
           ? `rgba(239, 68, 68, ${Math.random() * 0.15 + 0.1})`  // Muted Threat Red
-          : `rgba(34, 211, 238, ${Math.random() * 0.15 + 0.08})`; // Muted Cyber Cyan
+          : `rgba(228, 228, 231, ${Math.random() * 0.15 + 0.08})`; // Polished Silver
       }
 
       update() {
@@ -123,7 +123,7 @@ export default function GridBeamBackground({ attackActive = false, intensity = 0
       // ── Draw Background Grid Lines ──
       ctx.strokeStyle = attackActive 
         ? 'rgba(239, 68, 68, 0.012)' 
-        : 'rgba(34, 211, 238, 0.012)';
+        : 'rgba(228, 228, 231, 0.012)';
       ctx.lineWidth = 0.5;
 
       // Vertical lines

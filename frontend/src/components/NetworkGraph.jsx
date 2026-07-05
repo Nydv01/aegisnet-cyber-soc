@@ -80,8 +80,8 @@ export default function NetworkGraph({ attackActive = false, attackType = 'none'
           gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
           gradient.addColorStop(1, 'rgba(239, 68, 68, 0.15)');
         } else {
-          gradient.addColorStop(0, 'rgba(34, 211, 238, 0.15)');
-          gradient.addColorStop(1, 'rgba(34, 211, 238, 0.06)');
+          gradient.addColorStop(0, 'rgba(255, 255, 255, 0.12)');
+          gradient.addColorStop(1, 'rgba(255, 255, 255, 0.04)');
         }
 
         ctx.beginPath();
@@ -128,8 +128,8 @@ export default function NetworkGraph({ attackActive = false, attackType = 'none'
           ctx.fillStyle = `rgba(239, 68, 68, ${0.8 - p.t * 0.4})`;
           ctx.shadowColor = 'rgba(239, 68, 68, 0.5)';
         } else {
-          ctx.fillStyle = `rgba(34, 211, 238, ${0.6 - p.t * 0.3})`;
-          ctx.shadowColor = 'rgba(34, 211, 238, 0.3)';
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.5 - p.t * 0.25})`;
+          ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
         }
         ctx.shadowBlur = 6;
         ctx.fill();
@@ -175,7 +175,7 @@ export default function NetworkGraph({ attackActive = false, attackType = 'none'
           ? 'rgba(239, 68, 68, 0.5)'
           : isDefending
             ? 'rgba(16, 185, 129, 0.4)'
-            : 'rgba(34, 211, 238, 0.2)';
+            : 'rgba(228, 228, 231, 0.22)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 

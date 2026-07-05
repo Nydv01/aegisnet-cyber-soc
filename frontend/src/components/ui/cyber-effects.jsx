@@ -182,25 +182,25 @@ export function RadarSweep({ className, threatLevel = "safe" }) {
     <div
       ref={containerRef}
       className={cn(
-        "relative w-full aspect-square max-w-[280px] mx-auto rounded-full border border-cyan-500/20 bg-slate-950/40 backdrop-blur-sm overflow-hidden flex items-center justify-center shadow-[inset_0_0_30px_rgba(6,182,212,0.08)]",
+        "relative w-full aspect-square max-w-[280px] mx-auto rounded-full border border-zinc-700/20 bg-zinc-950/40 backdrop-blur-sm overflow-hidden flex items-center justify-center shadow-[inset_0_0_30px_rgba(255,255,255,0.03)]",
         className
       )}
     >
       {/* Radar grid rings */}
-      <div className="absolute inset-[15%] rounded-full border border-cyan-500/10 pointer-events-none" />
-      <div className="absolute inset-[35%] rounded-full border border-cyan-500/10 pointer-events-none" />
-      <div className="absolute inset-[55%] rounded-full border border-cyan-500/10 pointer-events-none" />
-      <div className="absolute inset-[75%] rounded-full border border-cyan-500/10 pointer-events-none" />
+      <div className="absolute inset-[15%] rounded-full border border-zinc-800/20 pointer-events-none" />
+      <div className="absolute inset-[35%] rounded-full border border-zinc-800/20 pointer-events-none" />
+      <div className="absolute inset-[55%] rounded-full border border-zinc-800/20 pointer-events-none" />
+      <div className="absolute inset-[75%] rounded-full border border-zinc-800/20 pointer-events-none" />
 
       {/* Grid cross lines */}
-      <div className="absolute w-[95%] h-[1px] bg-cyan-500/10" />
-      <div className="absolute h-[95%] w-[1px] bg-cyan-500/10" />
+      <div className="absolute w-[95%] h-[1px] bg-zinc-800/20" />
+      <div className="absolute h-[95%] w-[1px] bg-zinc-800/20" />
 
       {/* Sweep overlay line */}
       <div
         className="absolute inset-0 origin-center animate-[spin_4s_linear_infinite] pointer-events-none"
         style={{
-          background: "conic-gradient(from 0deg, rgba(6,182,212,0.15) 0deg, rgba(6,182,212,0.02) 60deg, transparent 90deg)",
+          background: "conic-gradient(from 0deg, rgba(255,255,255,0.08) 0deg, rgba(255,255,255,0.01) 60deg, transparent 90deg)",
         }}
       />
 
@@ -215,7 +215,7 @@ export function RadarSweep({ className, threatLevel = "safe" }) {
             "absolute w-2 h-2 rounded-full",
             blip.threat
               ? "bg-red-500 shadow-[0_0_10px_#ef4444]"
-              : "bg-cyan-500 shadow-[0_0_10px_#22d3ee]"
+              : "bg-zinc-100 shadow-[0_0_10px_#ffffff]"
           )}
           style={{ left: `${blip.x}%`, top: `${blip.y}%` }}
         />
@@ -233,7 +233,7 @@ export function CyberButton({ className, children, onClick, disabled, variant = 
       className={cn(
         "relative px-6 py-3 font-mono text-xs uppercase tracking-widest border transition-all duration-300 disabled:opacity-50 overflow-hidden group select-none",
         variant === "primary"
-          ? "border-cyan-500/40 text-cyan-400 bg-cyan-950/20 hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_20px_rgba(34,211,238,0.4)]"
+          ? "border-zinc-500/40 text-zinc-300 bg-zinc-950/20 hover:bg-zinc-100 hover:text-zinc-950 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
           : "border-red-500/40 text-red-400 bg-red-950/20 hover:bg-red-500 hover:text-black hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]",
         className
       )}

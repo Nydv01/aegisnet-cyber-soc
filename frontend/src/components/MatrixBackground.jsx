@@ -36,7 +36,7 @@ export default function MatrixBackground({ attackActive = false, intensity = 0.5
 
     const draw = () => {
       // Semi-transparent overlay to create trailing fade effect
-      ctx.fillStyle = 'rgba(3, 7, 18, 0.08)';
+      ctx.fillStyle = 'rgba(5, 5, 5, 0.08)';
       ctx.fillRect(0, 0, width, height);
 
       ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
@@ -51,13 +51,13 @@ export default function MatrixBackground({ attackActive = false, intensity = 0.5
           if (Math.random() < intensity * 0.4) {
             ctx.fillStyle = 'rgba(239, 68, 68, 0.35)'; // Vibrant Threat Red
           } else {
-            ctx.fillStyle = 'rgba(34, 211, 238, 0.15)'; // Faded Cyan
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'; // Faded Silver-White
           }
         } else {
-          // Normal state: glowing cyber cyan/blue shades (cyber feel)
+          // Normal state: glowing white/silver shades (carbon chrome feel)
           ctx.fillStyle = Math.random() < 0.15 
-            ? 'rgba(34, 211, 238, 0.22)' // Glowing Cyan
-            : 'rgba(99, 102, 241, 0.12)'; // Deep Indigo Blue
+            ? 'rgba(255, 255, 255, 0.22)' // Glowing Chrome-White
+            : 'rgba(161, 161, 170, 0.12)'; // Muted Silver-Zinc
         }
 
         const x = i * fontSize;

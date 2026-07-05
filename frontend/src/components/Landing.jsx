@@ -155,7 +155,7 @@ export default function Landing() {
           width={550}
           height={140}
           rotate={12}
-          gradient="from-cyan-500/[0.08]"
+          gradient="from-white/[0.04]"
           className="left-[-10%] top-[10%]"
         />
         <ElegantShape
@@ -163,7 +163,7 @@ export default function Landing() {
           width={450}
           height={110}
           rotate={-15}
-          gradient="from-indigo-500/[0.08]"
+          gradient="from-zinc-300/[0.04]"
           className="right-[-5%] top-[40%]"
         />
         <ElegantShape
@@ -171,7 +171,7 @@ export default function Landing() {
           width={300}
           height={80}
           rotate={-8}
-          gradient="from-purple-500/[0.08]"
+          gradient="from-zinc-400/[0.03]"
           className="left-[10%] bottom-[15%]"
         />
       </div>
@@ -211,13 +211,13 @@ export default function Landing() {
               <div className="flex flex-wrap gap-4">
                 <button
                   onClick={handleStart}
-                  className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-bold text-sm shadow-[0_0_30px_rgba(6,182,212,0.25)] transition-all duration-300 hover:-translate-y-0.5"
+                  className="px-8 py-4 bg-gradient-to-r from-zinc-200 via-white to-zinc-400 text-zinc-950 rounded-xl font-black text-sm shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all duration-300 hover:-translate-y-0.5"
                 >
                   🚀 Launch SOC Console
                 </button>
                 <button
                   onClick={() => navigate('/models')}
-                  className="px-8 py-4 bg-zinc-950/80 hover:bg-zinc-900/90 text-cyan-400 rounded-xl font-bold text-sm border border-cyan-800/40 transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-md"
+                  className="px-8 py-4 bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-300 rounded-xl font-bold text-sm border border-zinc-700/50 transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-md"
                 >
                   🧠 Explore ML Models
                 </button>
@@ -457,10 +457,10 @@ export default function Landing() {
         {/* ── SECTION 8: Holographic Call-To-Action ── */}
         <section className="py-16 pb-24">
           <ScrollReveal>
-            <div className="relative rounded-2xl border border-cyan-500/10 bg-gradient-to-b from-cyan-950/5 to-indigo-950/5 backdrop-blur-[2px] p-10 md:p-16 overflow-hidden text-center shadow-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(34,211,238,0.1),transparent_70%)]" />
+            <div className="relative rounded-2xl border border-zinc-800/60 bg-gradient-to-b from-zinc-950/20 to-black/20 backdrop-blur-[2px] p-10 md:p-16 overflow-hidden text-center shadow-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.04),transparent_70%)]" />
               
-              <span className="text-3xl mb-6 inline-block filter drop-shadow-[0_0_12px_rgba(34,211,238,0.4)]">
+              <span className="text-3xl mb-6 inline-block filter drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]">
                 🛡️
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 relative z-10 leading-tight">
@@ -471,7 +471,7 @@ export default function Landing() {
               </p>
               
               <button
-                className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-bold text-sm shadow-[0_0_30px_rgba(6,182,212,0.25)] transition-all duration-300 hover:-translate-y-0.5 relative z-10"
+                className="px-8 py-4 bg-gradient-to-r from-zinc-200 via-white to-zinc-400 text-zinc-950 rounded-xl font-black text-sm shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all duration-300 hover:-translate-y-0.5 relative z-10"
                 onClick={handleStart}
               >
                 🚀 Open SOC Command Workspace

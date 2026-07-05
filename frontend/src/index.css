@@ -14,37 +14,37 @@
 
 /* ═══════════════════ CSS CUSTOM PROPERTIES ═══════════════════ */
 :root {
-  /* ── Deep space palette ── */
-  --bg-void: #020308;
-  --bg-deep: #04050e;
-  --bg-primary: #060814;
-  --bg-secondary: #080c1d;
-  --bg-tertiary: #0d122b;
-  --bg-elevated: #111736;
-  --bg-surface: #161d42;
+  /* ── Carbon Black void palette ── */
+  --bg-void: #050505;
+  --bg-deep: #0a0a0a;
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #141414;
+  --bg-tertiary: #191919;
+  --bg-elevated: #1f1f1f;
+  --bg-surface: #242424;
 
-  /* ── Glass layers ── */
-  --glass-bg: rgba(6, 8, 20, 0.45);
-  --glass-bg-strong: rgba(6, 8, 20, 0.75);
-  --glass-border: rgba(34, 211, 238, 0.04);
-  --glass-border-hover: rgba(34, 211, 238, 0.18);
+  /* ── Silver/Chrome Glass layers ── */
+  --glass-bg: rgba(10, 10, 10, 0.5);
+  --glass-bg-strong: rgba(10, 10, 10, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-border-hover: rgba(255, 255, 255, 0.22);
   --glass-blur: 20px;
   --glass-blur-strong: 36px;
 
-  /* ── Neon Accent System ── */
-  --neon-cyan: #22d3ee;
-  --neon-cyan-bright: #67e8f9;
-  --neon-cyan-glow: rgba(34, 211, 238, 0.4);
-  --neon-cyan-dim: rgba(34, 211, 238, 0.08);
-  --neon-cyan-subtle: rgba(34, 211, 238, 0.04);
+  /* ── Metallic Accent System ── */
+  --neon-cyan: #e4e4e7;
+  --neon-cyan-bright: #ffffff;
+  --neon-cyan-glow: rgba(228, 228, 231, 0.15);
+  --neon-cyan-dim: rgba(228, 228, 231, 0.05);
+  --neon-cyan-subtle: rgba(228, 228, 231, 0.02);
 
-  --neon-blue: #3b82f6;
-  --neon-blue-bright: #60a5fa;
-  --neon-blue-dim: rgba(59, 130, 246, 0.08);
+  --neon-blue: #a1a1aa;
+  --neon-blue-bright: #d4d4d8;
+  --neon-blue-dim: rgba(161, 161, 170, 0.05);
 
-  --neon-purple: #a855f7;
-  --neon-purple-bright: #c084fc;
-  --neon-purple-dim: rgba(168, 85, 247, 0.08);
+  --neon-purple: #71717a;
+  --neon-purple-bright: #a1a1aa;
+  --neon-purple-dim: rgba(113, 113, 122, 0.05);
 
   --neon-green: #10b981;
   --neon-green-bright: #34d399;
@@ -127,9 +127,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.05), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(99, 102, 241, 0.03), transparent 60%),
-    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(168, 85, 247, 0.02), transparent 60%);
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 255, 255, 0.03), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(161, 161, 170, 0.02), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(113, 113, 122, 0.012), transparent 60%);
   pointer-events: none;
   z-index: -10;
 }
