@@ -5,8 +5,8 @@ import ScrollReveal from './ScrollReveal';
 import AnimatedNumber from './AnimatedNumber';
 import TextScramble from './TextScramble';
 import ShinyText from './ShinyText';
-import RadarScan from './RadarScan';
 import WorldMap from './WorldMap';
+import { RadarSweep, AnimatedBorderCard, TerminalTextStream, CyberButton } from './ui/cyber-effects';
 
 const API = 'http://localhost:8000';
 
@@ -156,10 +156,10 @@ export default function Dashboard({ telemetry, events }) {
         <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h1>
-              <ShinyText>📊 Security Operations Center</ShinyText>
+              <TerminalTextStream text="📊 Security Operations Center" speed={40} />
             </h1>
             <p>
-              <TextScramble delay={100}>Real-time cyber telemetry and neural network response streams</TextScramble>
+              <TextScramble delay={200}>Real-time cyber telemetry and neural network response streams</TextScramble>
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -217,126 +217,136 @@ export default function Dashboard({ telemetry, events }) {
         
         {/* Cell 1: Geolocation Threat Map (Col Span 2, Row Span 2) */}
         <ScrollReveal delay={50} className="bento-cell col-span-2 row-span-2">
-          <SpotlightCard style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div className="card-header">
-              <h2>🌐 Global Threat Geolocation Map</h2>
-              <span className={`card-badge ${isAttackActive ? 'badge-alert' : 'badge-live'}`}>
-                {isAttackActive ? '🚨 ATTACK VECTOR ACTIVE' : '● MONITORING'}
-              </span>
+          <AnimatedBorderCard className="h-full">
+            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 20 }}>
+              <div className="card-header">
+                <h2>🌐 Global Threat Geolocation Map</h2>
+                <span className={`card-badge ${isAttackActive ? 'badge-alert' : 'badge-live'}`}>
+                  {isAttackActive ? '🚨 ATTACK VECTOR ACTIVE' : '● MONITORING'}
+                </span>
+              </div>
+              <WorldMap attackActive={isAttackActive} attackType={t.attack_type} />
+              <div className="bento-stats-row">
+                <span className="stat-label">Active Node Clusters:</span>
+                <span className="stat-val">USA, Frankfurt, Tokyo, Mumbai, Sydney</span>
+              </div>
             </div>
-            <WorldMap attackActive={isAttackActive} attackType={t.attack_type} />
-            <div className="bento-stats-row">
-              <span className="stat-label">Active Node Clusters:</span>
-              <span className="stat-val">USA, Frankfurt, Tokyo, Mumbai, Sydney</span>
-            </div>
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
 
         {/* Cell 2: Threat Vector Sonar (Col Span 1, Row Span 2) */}
         <ScrollReveal delay={100} className="bento-cell row-span-2">
-          <SpotlightCard style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div className="card-header">
-              <h2>📡 Radar Scanning Sonar</h2>
-              <span className={`card-badge ${t.threat_level === 'safe' ? 'badge-info' : 'badge-alert'}`}>
-                {t.threat_level || 'safe'}
-              </span>
+          <AnimatedBorderCard className="h-full">
+            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 20 }}>
+              <div className="card-header">
+                <h2>📡 Radar Scanning Sonar</h2>
+                <span className={`card-badge ${t.threat_level === 'safe' ? 'badge-info' : 'badge-alert'}`}>
+                  {t.threat_level || 'safe'}
+                </span>
+              </div>
+              <RadarSweep threatLevel={t.threat_level || 'safe'} />
+              <div className="bento-stats-row" style={{ marginTop: 12 }}>
+                <span className="stat-label">Scan sweep:</span>
+                <span className="stat-val">IDS & WAF signals</span>
+              </div>
             </div>
-            <RadarScan threatLevel={t.threat_level || 'safe'} />
-            <div className="bento-stats-row">
-              <span className="stat-label">Scan sweep:</span>
-              <span className="stat-val">IDS & WAF signals</span>
-            </div>
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
 
         {/* Cell 3: Resource Allocation & Health (Col Span 2) */}
         <ScrollReveal delay={150} className="bento-cell col-span-2">
-          <SpotlightCard>
-            <div className="card-header">
-              <h2>⚙️ Host Resource Allocation & Health</h2>
-              <span className="card-badge badge-live">● TELEMETRY DIALS</span>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24, alignItems: 'center' }}>
-              <div className="gauges-row" style={{ margin: 0, justifyContent: 'space-around' }}>
-                <Gauge value={t.cpu_usage || 0} max={100} label="CPU Load" color="#3b82f6" />
-                <Gauge value={t.ram_usage || 0} max={100} label="RAM Usage" color="#a855f7" />
+          <AnimatedBorderCard>
+            <div style={{ padding: 20 }}>
+              <div className="card-header">
+                <h2>⚙️ Host Resource Allocation & Health</h2>
+                <span className="card-badge badge-live">● TELEMETRY DIALS</span>
               </div>
-              <div style={{ borderLeft: '1px solid var(--glass-border)', paddingLeft: 24 }}>
-                <div className="health-bar-container">
-                  <div className="health-bar-track">
-                    <div
-                      className="health-bar-fill"
-                      style={{
-                        width: `${t.system_health || 100}%`,
-                        background: `linear-gradient(90deg, ${healthColor}, ${healthColor}cc)`,
-                        color: healthColor,
-                      }}
-                    />
-                  </div>
-                  <div className="health-bar-label">
-                    <span>Host Integrity</span>
-                    <span><AnimatedNumber value={t.system_health || 100} />%</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24, alignItems: 'center' }}>
+                <div className="gauges-row" style={{ margin: 0, justifyContent: 'space-around' }}>
+                  <Gauge value={t.cpu_usage || 0} max={100} label="CPU Load" color="#3b82f6" />
+                  <Gauge value={t.ram_usage || 0} max={100} label="RAM Usage" color="#a855f7" />
+                </div>
+                <div style={{ borderLeft: '1px solid var(--glass-border)', paddingLeft: 24 }}>
+                  <div className="health-bar-container">
+                    <div className="health-bar-track">
+                      <div
+                        className="health-bar-fill"
+                        style={{
+                          width: `${t.system_health || 100}%`,
+                          background: `linear-gradient(90deg, ${healthColor}, ${healthColor}cc)`,
+                          color: healthColor,
+                        }}
+                      />
+                    </div>
+                    <div className="health-bar-label">
+                      <span>Host Integrity</span>
+                      <span><AnimatedNumber value={t.system_health || 100} />%</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
 
         {/* Cell 4: Model Validation Metrics (Col Span 1) */}
         <ScrollReveal delay={200} className="bento-cell">
-          <SpotlightCard style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div className="card-header">
-              <h2>🧠 AI Model Validation</h2>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div className="feature-item">
-                <span className="feature-name">IDS RF Accuracy</span>
-                <span className="feature-value">{(modelMetrics?.ids_metrics?.accuracy * 100 || 100).toFixed(0)}%</span>
+          <AnimatedBorderCard className="h-full">
+            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 20 }}>
+              <div className="card-header">
+                <h2>🧠 AI Model Validation</h2>
               </div>
-              <div className="feature-item">
-                <span className="feature-name">Phishing Accuracy</span>
-                <span className="feature-value">{(modelMetrics?.phishing_metrics?.accuracy * 100 || 100).toFixed(0)}%</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="feature-item">
+                  <span className="feature-name">IDS RF Accuracy</span>
+                  <span className="feature-value">{(modelMetrics?.ids_metrics?.accuracy * 100 || 100).toFixed(0)}%</span>
+                </div>
+                <div className="feature-item">
+                  <span className="feature-name">Phishing Accuracy</span>
+                  <span className="feature-value">{(modelMetrics?.phishing_metrics?.accuracy * 100 || 100).toFixed(0)}%</span>
+                </div>
+              </div>
+              <div className="bento-stats-row">
+                <span className="stat-label">Classifier parameters:</span>
+                <span className="stat-val">Scikit-Learn metrics</span>
               </div>
             </div>
-            <div className="bento-stats-row">
-              <span className="stat-label">Classifier parameters:</span>
-              <span className="stat-val">Scikit-Learn metrics</span>
-            </div>
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
 
         {/* Cell 5: Bandwidth, Latency & Packet Rate (Col Span 2) */}
         <ScrollReveal delay={250} className="bento-cell col-span-2">
-          <SpotlightCard>
-            <div className="card-header">
-              <h2>📊 Analytics Performance Charts</h2>
-              <span className="live-badge">
-                <span className="live-dot" />
-                LIVE
-              </span>
+          <AnimatedBorderCard>
+            <div style={{ padding: 20 }}>
+              <div className="card-header">
+                <h2>📊 Analytics Performance Charts</h2>
+                <span className="live-badge">
+                  <span className="live-dot" />
+                  LIVE
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                <div>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                    Bandwidth (<AnimatedNumber value={t.bandwidth_in || 0} /> Mbps)
+                  </span>
+                  <MiniChart data={bandwidthHistory} color="#22d3ee" height={90} />
+                </div>
+                <div>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                    Latency (<AnimatedNumber value={t.latency_ms || 0} /> ms)
+                  </span>
+                  <MiniChart data={latencyHistory} color="#a855f7" height={90} />
+                </div>
+                <div>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                    Packet Rate (pkt/s)
+                  </span>
+                  <MiniChart data={packetRateHistory} color="#10b981" height={90} />
+                </div>
+              </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-              <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                  Bandwidth (<AnimatedNumber value={t.bandwidth_in || 0} /> Mbps)
-                </span>
-                <MiniChart data={bandwidthHistory} color="#22d3ee" height={90} />
-              </div>
-              <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                  Latency (<AnimatedNumber value={t.latency_ms || 0} /> ms)
-                </span>
-                <MiniChart data={latencyHistory} color="#a855f7" height={90} />
-              </div>
-              <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                  Packet Rate (pkt/s)
-                </span>
-                <MiniChart data={packetRateHistory} color="#10b981" height={90} />
-              </div>
-            </div>
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
 
         {/* Cell 6: Incident Logs Feed (Col Span 3) */}

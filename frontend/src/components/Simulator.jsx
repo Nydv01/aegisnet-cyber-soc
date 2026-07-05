@@ -7,6 +7,7 @@ import ShinyText from './ShinyText';
 import GlitchText from './GlitchText';
 import CyberTerminal from './CyberTerminal';
 import NetworkGraph from './NetworkGraph';
+import { AnimatedBorderCard, TerminalTextStream, CyberButton } from './ui/cyber-effects';
 
 const API = 'http://localhost:8000';
 
@@ -155,10 +156,10 @@ export default function Simulator({ telemetry, events }) {
       <ScrollReveal>
         <div className="page-header">
           <h1>
-            <ShinyText>⚔️ Threat Simulation Core</ShinyText>
+            ⚔️ <TerminalTextStream text="Threat Simulation Core" speed={40} />
           </h1>
           <p>
-            <TextScramble delay={100}>Inject cyber attack vectors and coordinate automated neural defense mitigations in a sandboxed environment</TextScramble>
+            <TextScramble delay={200}>Inject cyber attack vectors and coordinate automated neural defense mitigations in a sandboxed environment</TextScramble>
           </p>
         </div>
       </ScrollReveal>
@@ -237,150 +238,154 @@ export default function Simulator({ telemetry, events }) {
         
         {/* Attack Panel */}
         <ScrollReveal delay={100} className="display-contents">
-          <SpotlightCard>
-            <div className="card-header">
-              <h2>🎯 Threat Injector Panel</h2>
+          <AnimatedBorderCard>
+            <div style={{ padding: 20 }}>
+              <div className="card-header">
+                <h2>🎯 Threat Injector Panel</h2>
+                {activeAttack && (
+                  <CyberButton variant="danger" onClick={stopAttack} disabled={loading}>
+                    {loading ? <span className="spinner" /> : '⏹ Neutralize'}
+                  </CyberButton>
+                )}
+              </div>
+
+              <div className="attack-grid">
+                {ATTACKS.map((atk) => (
+                  <button
+                    key={atk.type}
+                    className={`attack-btn ${activeAttack === atk.type ? 'active' : ''}`}
+                    onClick={() => launchAttack(atk.type)}
+                    disabled={loading || (activeAttack && activeAttack !== atk.type)}
+                    id={`attack-${atk.type}`}
+                  >
+                    <span className="attack-icon">{atk.icon}</span>
+                    <span className="attack-name">{atk.name}</span>
+                    <span className="attack-desc">{atk.desc}</span>
+                    <span style={{
+                      fontSize: '0.58rem',
+                      fontWeight: 800,
+                      color: atk.color,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      marginTop: 4,
+                    }}>
+                      {atk.severity}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="slider-container">
+                <label>Exploit Intensity:</label>
+                <input
+                  type="range"
+                  className="slider-input"
+                  min="0.1"
+                  max="1.0"
+                  step="0.1"
+                  value={intensity}
+                  onChange={(e) => setIntensity(parseFloat(e.target.value))}
+                />
+                <span className="slider-value">{(intensity * 100).toFixed(0)}%</span>
+              </div>
+
+              {/* Attack intensity waveform */}
               {activeAttack && (
-                <button className="btn btn-danger btn-sm" onClick={stopAttack} disabled={loading}>
-                  {loading ? <span className="spinner" /> : '⏹ Neutralize'}
-                </button>
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>
+                    Attack Intensity Waveform
+                  </div>
+                  <div className="health-bar-track" style={{ height: 10 }}>
+                    <div
+                      className="health-bar-fill"
+                      style={{
+                        width: `${intensity * 100}%`,
+                        background: 'linear-gradient(90deg, var(--neon-orange), var(--neon-red))',
+                        boxShadow: '0 0 12px rgba(239, 68, 68, 0.4)',
+                      }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
-
-            <div className="attack-grid">
-              {ATTACKS.map((atk) => (
-                <button
-                  key={atk.type}
-                  className={`attack-btn ${activeAttack === atk.type ? 'active' : ''}`}
-                  onClick={() => launchAttack(atk.type)}
-                  disabled={loading || (activeAttack && activeAttack !== atk.type)}
-                  id={`attack-${atk.type}`}
-                >
-                  <span className="attack-icon">{atk.icon}</span>
-                  <span className="attack-name">{atk.name}</span>
-                  <span className="attack-desc">{atk.desc}</span>
-                  <span style={{
-                    fontSize: '0.58rem',
-                    fontWeight: 800,
-                    color: atk.color,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    marginTop: 4,
-                  }}>
-                    {atk.severity}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="slider-container">
-              <label>Exploit Intensity:</label>
-              <input
-                type="range"
-                className="slider-input"
-                min="0.1"
-                max="1.0"
-                step="0.1"
-                value={intensity}
-                onChange={(e) => setIntensity(parseFloat(e.target.value))}
-              />
-              <span className="slider-value">{(intensity * 100).toFixed(0)}%</span>
-            </div>
-
-            {/* Attack intensity waveform */}
-            {activeAttack && (
-              <div style={{ marginTop: 16 }}>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>
-                  Attack Intensity Waveform
-                </div>
-                <div className="health-bar-track" style={{ height: 10 }}>
-                  <div
-                    className="health-bar-fill"
-                    style={{
-                      width: `${intensity * 100}%`,
-                      background: 'linear-gradient(90deg, var(--neon-orange), var(--neon-red))',
-                      boxShadow: '0 0 12px rgba(239, 68, 68, 0.4)',
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-          </SpotlightCard>
+          </AnimatedBorderCard>
         </ScrollReveal>
 
         {/* AI Agent Control */}
         <ScrollReveal delay={150} className="display-contents">
-          <SpotlightCard>
-            <div className="card-header">
-              <h2>🤖 Neural Response Agent</h2>
-              <span className={`card-badge ${agentEnabled ? 'badge-live' : 'badge-info'}`}>
-                {agentEnabled ? '● Active' : '○ Standby'}
-              </span>
-            </div>
-
-            <div className="toggle-container" style={{ marginBottom: 20 }}>
-              <div
-                className={`toggle-switch ${agentEnabled ? 'active' : ''}`}
-                onClick={toggleAgent}
-                role="switch"
-                aria-checked={agentEnabled}
-                id="agent-toggle"
-              />
-              <span className="toggle-label">
-                {agentEnabled ? 'Autonomous defense engaged' : 'Toggle autonomous RL mode'}
-              </span>
-            </div>
-
-            {agentEnabled && agentStatus && (
-              <>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
-                  <div className="feature-item">
-                    <span className="feature-name">Active Action</span>
-                    <span className="feature-value" style={{ textTransform: 'uppercase', color: 'var(--neon-cyan)' }}>
-                      {agentStatus.last_action || 'idle'}
-                    </span>
-                  </div>
-                  <div className="feature-item">
-                    <span className="feature-name">Agent State</span>
-                    <span className="feature-value" style={{ color: 'var(--neon-green)' }}>
-                      {agentStatus.current_state ?? 'N/A'}
-                    </span>
-                  </div>
-                </div>
-
-                <h3 style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: 8, marginTop: 8, letterSpacing: '0.04em', fontWeight: 700, textTransform: 'uppercase' }}>
-                  Mitigation Strategy Preferences (Q-Values)
-                </h3>
-                <div className="q-values-grid">
-                  {Object.entries(qValues).map(([action, value]) => (
-                    <div key={action} className="q-value-bar">
-                      <span className="q-value-label">{action.replace(/_/g, ' ')}</span>
-                      <div className="q-value-track">
-                        <div
-                          className="q-value-fill"
-                          style={{
-                            width: `${Math.max(2, (Math.abs(value) / maxQ) * 100)}%`,
-                            background: value >= 0
-                              ? 'linear-gradient(90deg, #22d3ee, #3b82f6)'
-                              : 'linear-gradient(90deg, #ef4444, #dc2626)',
-                          }}
-                        />
-                      </div>
-                      <span className="q-value-num">{value.toFixed(2)}</span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {!agentEnabled && (
-              <div className="empty-state" style={{ padding: '24px 0' }}>
-                <div className="empty-icon">🤖</div>
-                <h3>Agent Inactive</h3>
-                <p>Enable the agent to see real-time Q-value policy decisions</p>
+          <AnimatedBorderCard>
+            <div style={{ padding: 20 }}>
+              <div className="card-header">
+                <h2>🤖 Neural Response Agent</h2>
+                <span className={`card-badge ${agentEnabled ? 'badge-live' : 'badge-info'}`}>
+                  {agentEnabled ? '● Active' : '○ Standby'}
+                </span>
               </div>
-            )}
-          </SpotlightCard>
+
+              <div className="toggle-container" style={{ marginBottom: 20 }}>
+                <div
+                  className={`toggle-switch ${agentEnabled ? 'active' : ''}`}
+                  onClick={toggleAgent}
+                  role="switch"
+                  aria-checked={agentEnabled}
+                  id="agent-toggle"
+                />
+                <span className="toggle-label">
+                  {agentEnabled ? 'Autonomous defense engaged' : 'Toggle autonomous RL mode'}
+                </span>
+              </div>
+
+              {agentEnabled && agentStatus && (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
+                    <div className="feature-item">
+                      <span className="feature-name">Active Action</span>
+                      <span className="feature-value" style={{ textTransform: 'uppercase', color: 'var(--neon-cyan)' }}>
+                        {agentStatus.last_action || 'idle'}
+                      </span>
+                    </div>
+                    <div className="feature-item">
+                      <span className="feature-name">Agent State</span>
+                      <span className="feature-value" style={{ color: 'var(--neon-green)' }}>
+                        {agentStatus.current_state ?? 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: 8, marginTop: 8, letterSpacing: '0.04em', fontWeight: 700, textTransform: 'uppercase' }}>
+                    Mitigation Strategy Preferences (Q-Values)
+                  </h3>
+                  <div className="q-values-grid">
+                    {Object.entries(qValues).map(([action, value]) => (
+                      <div key={action} className="q-value-bar">
+                        <span className="q-value-label">{action.replace(/_/g, ' ')}</span>
+                        <div className="q-value-track">
+                          <div
+                            className="q-value-fill"
+                            style={{
+                              width: `${Math.max(2, (Math.abs(value) / maxQ) * 100)}%`,
+                              background: value >= 0
+                                ? 'linear-gradient(90deg, #22d3ee, #3b82f6)'
+                                : 'linear-gradient(90deg, #ef4444, #dc2626)',
+                            }}
+                          />
+                        </div>
+                        <span className="q-value-num">{value.toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {!agentEnabled && (
+                <div className="empty-state" style={{ padding: '24px 0' }}>
+                  <div className="empty-icon">🤖</div>
+                  <h3>Agent Inactive</h3>
+                  <p>Enable the agent to see real-time Q-value policy decisions</p>
+                </div>
+              )}
+            </div>
+          </AnimatedBorderCard>
         </ScrollReveal>
       </div>
 

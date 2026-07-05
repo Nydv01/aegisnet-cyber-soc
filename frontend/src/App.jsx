@@ -14,6 +14,7 @@ import ParticleField from './components/ParticleField';
 import PageTransition from './components/PageTransition';
 import CommandPalette from './components/CommandPalette';
 import { ToastProvider, useToast } from './components/ToastNotification';
+import { InteractiveGrid } from './components/ui/cyber-effects';
 import './index.css';
 
 const WS_URL = 'ws://localhost:8000/ws/telemetry';
@@ -142,10 +143,10 @@ function AppContent() {
 
   return (
     <div className="app-layout">
-      {/* Animated Cyber Digital Matrix & Aurora Background */}
       <MatrixBackground attackActive={isAttack} intensity={intensity} />
       <AuroraBackground />
       <ParticleField attackActive={isAttack} intensity={intensity} />
+      <InteractiveGrid />
 
       {/* Global Glass Top Navbar */}
       <header className="global-navbar">
