@@ -15,6 +15,7 @@ import os
 from datetime import datetime
 from typing import Optional
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
 
 load_dotenv()
 
@@ -43,6 +44,17 @@ if DATABASE_URL:
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
     
+    # Safely URL-encode credentials (user/password) to support special characters like '@'
+    if DATABASE_URL.startswith("postgresql://"):
+        rest = DATABASE_URL[len("postgresql://"):]
+        if "@" in rest:
+            credentials, host_db = rest.rsplit("@", 1)
+            if ":" in credentials:
+                user, password = credentials.split(":", 1)
+                safe_user = quote_plus(user)
+                safe_password = quote_plus(password)
+                DATABASE_URL = f"postgresql://{safe_user}:{safe_password}@{host_db}"
+
     # Connect to PostgreSQL (Supabase)
     engine = create_engine(DATABASE_URL)
     print("[Database] Connected to PostgreSQL (Supabase)")
@@ -120,9 +132,28 @@ class UserSession(Base):
 # ---------------------------------------------------------------------------
 
 def init_db():
-    """Create all tables."""
-    Base.metadata.create_all(bind=engine)
-    print("[Database] Tables created successfully.")
+    """Create all tables with automatic local SQLite fallback on connection failure."""
+    global engine, SessionLocal
+    try:
+        # Try to initialize with the configured engine (PostgreSQL/Supabase)
+        Base.metadata.create_all(bind=engine)
+        print("[Database] Tables created successfully on PostgreSQL (Supabase).")
+    except Exception as e:
+        print(f"\n[Database] ⚠️ CONNECTION ERROR: Failed to connect to remote database: {e}")
+        print("[Database] 🔄 Falling back to local SQLite database to prevent server crash...")
+        
+        # Override connection URL and engine to local SQLite
+        sqlite_url = f"sqlite:///{os.path.join(DB_DIR, 'aegisnet.db')}"
+        engine = create_engine(sqlite_url, connect_args={"check_same_thread": False})
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        
+        # Try again with SQLite
+        try:
+            Base.metadata.create_all(bind=engine)
+            print("[Database] Connected and initialized local SQLite successfully.")
+        except Exception as sqlite_err:
+            print(f"[Database] ❌ CRITICAL: Failed to initialize local SQLite: {sqlite_err}")
+            return
 
     # Create default admin user if none exists
     db = SessionLocal()
@@ -142,6 +173,7 @@ def init_db():
         print(f"[Database] Warning creating default user: {e}")
     finally:
         db.close()
+
 
 
 def get_db():
