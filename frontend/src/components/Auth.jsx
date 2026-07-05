@@ -4,6 +4,7 @@ import SpotlightCard from './SpotlightCard';
 import ScrollReveal from './ScrollReveal';
 import ShinyText from './ShinyText';
 import TextScramble from './TextScramble';
+import { supabase } from '../lib/supabase';
 
 const API = 'http://localhost:8000';
 
@@ -37,7 +38,36 @@ export default function Auth({ onLogin }) {
 
     try {
       if (isLogin) {
-        // ── Sign In Flow ──
+        // ── Supabase Sign In First ──
+        let token = null;
+        let displayName = username.trim();
+        
+        try {
+          const email = username.includes('@') ? username.trim() : `${username.trim()}@aegisnet.local`;
+          const { data: sbData, error: sbError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          
+          if (!sbError && sbData?.session) {
+            token = sbData.session.access_token;
+            displayName = sbData.user.email.split('@')[0];
+          } else if (sbError) {
+            console.log('[Supabase Auth] Fallback to backend authentication due to:', sbError.message);
+          }
+        } catch (sbErr) {
+          console.log('[Supabase Auth] Could not reach Supabase:', sbErr);
+        }
+
+        if (token) {
+          localStorage.setItem('aegis_token', token);
+          localStorage.setItem('aegis_user', displayName);
+          onLogin(displayName);
+          navigate('/dashboard');
+          return;
+        }
+
+        // ── Local Backend Sign In Fallback ──
         const formData = new URLSearchParams();
         formData.append('username', username.trim());
         formData.append('password', password);
@@ -59,7 +89,25 @@ export default function Auth({ onLogin }) {
         onLogin(data.username);
         navigate('/dashboard');
       } else {
-        // ── Sign Up Flow ──
+        // ── Supabase Sign Up First ──
+        let sbSuccess = false;
+        try {
+          const email = username.includes('@') ? username.trim() : `${username.trim()}@aegisnet.local`;
+          const { data: sbData, error: sbError } = await supabase.auth.signUp({
+            email,
+            password,
+          });
+          
+          if (!sbError && sbData?.user) {
+            sbSuccess = true;
+          } else if (sbError) {
+            console.log('[Supabase Sign Up] Fallback to backend registration due to:', sbError.message);
+          }
+        } catch (sbErr) {
+          console.log('[Supabase Sign Up] Could not reach Supabase:', sbErr);
+        }
+
+        // ── Local Backend Sign Up ──
         const res = await fetch(`${API}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -69,13 +117,12 @@ export default function Auth({ onLogin }) {
           }),
         });
 
-        if (!res.ok) {
+        if (!res.ok && !sbSuccess) {
           const data = await res.json();
           throw new Error(data.detail || 'Registration failed');
         }
 
-        const data = await res.json();
-        setMessage(data.message || 'Account registered successfully! Please sign in.');
+        setMessage('Account registered successfully! Please sign in.');
         setIsLogin(true);
         setPassword('');
         setConfirmPassword('');
