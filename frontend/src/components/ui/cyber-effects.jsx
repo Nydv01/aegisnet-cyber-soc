@@ -7,7 +7,7 @@ export function AnimatedBorderCard({ className, children, glowColor = "var(--neo
   return (
     <div
       className={cn(
-        "relative rounded-xl overflow-hidden bg-slate-950/80 border border-slate-900 shadow-[0_4px_24px_rgba(0,0,0,0.4)] group",
+        "relative rounded-xl overflow-hidden bg-slate-950/45 backdrop-blur-[2px] border border-white/[0.03] shadow-[0_4px_24px_rgba(0,0,0,0.25)] group",
         className
       )}
     >
@@ -21,7 +21,7 @@ export function AnimatedBorderCard({ className, children, glowColor = "var(--neo
       {/* Running neon border border */}
       <span className="absolute inset-[-1000%] animate-[spin_5s_linear_infinite] opacity-30 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0 bg-[conic-gradient(from_0deg,transparent_40%,var(--neon-cyan)_50%,var(--neon-blue)_60%,transparent_70%)]" />
       
-      <div className="absolute inset-[1px] bg-slate-950/95 rounded-[11px] z-10" />
+      <div className="absolute inset-[1px] bg-slate-950/70 backdrop-blur-[1px] rounded-[11px] z-10" />
       
       {/* Content wrapper */}
       <div className="relative z-20 h-full w-full">
