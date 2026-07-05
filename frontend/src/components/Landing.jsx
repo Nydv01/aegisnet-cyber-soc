@@ -157,7 +157,7 @@ export default function Landing() {
   ];
 
   return (
-    <div className="landing-wrapper relative w-full min-h-screen bg-black overflow-hidden select-none" style={{ padding: 0 }}>
+    <div className="landing-wrapper relative w-full min-h-screen bg-transparent overflow-hidden select-none" style={{ padding: 0 }}>
       
       {/* ── Background Geometric Floating Accents ── */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-50">
@@ -237,7 +237,7 @@ export default function Landing() {
           </div>
 
           {/* Right Column: 3D Shield Model with HUD Framing */}
-          <div className="flex-1 w-full md:max-w-[48%] aspect-square relative rounded-2xl border border-white/[0.06] bg-gradient-to-b from-zinc-950/50 to-black/30 backdrop-blur-md p-2 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)] group">
+          <div className="flex-1 w-full md:max-w-[48%] aspect-square relative rounded-2xl border border-cyan-500/15 bg-cyan-950/[0.05] backdrop-blur-[2px] p-2 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] group">
             <HoverSpotlight size={200} className="from-cyan-500/10 via-transparent to-transparent" />
             
             {/* Top Hacker Ticks */}
@@ -346,7 +346,7 @@ export default function Landing() {
       </div>
 
       {/* ── SECTION 4: High-Performance Particle Engine (MagicDust) ── */}
-      <section className="relative py-24 bg-black border-t border-b border-white/[0.04] overflow-hidden">
+      <section className="relative py-24 bg-transparent border-t border-b border-white/[0.04] overflow-hidden">
         <div className="absolute inset-0 z-0">
           <MagicDust sequence={dustSequence} particleCount={7000} holdDuration={2.2} particleColor="#22d3ee" />
         </div>
@@ -388,7 +388,7 @@ export default function Landing() {
       </section>
 
       {/* ── SECTION 5: Zoom Parallax Cybersecurity Ledgers ── */}
-      <section className="relative py-24 bg-black">
+      <section className="relative py-24 bg-transparent">
         <div className="text-center mb-16 max-w-lg mx-auto px-6">
           <span className="text-[0.65rem] tracking-[0.25em] font-extrabold text-cyan-400 uppercase">
             Visual Telemetry Grid
@@ -470,7 +470,7 @@ export default function Landing() {
               {techStack.map((tech) => (
                 <div
                   key={tech.name}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 border border-white/[0.04] text-xs text-white/80 font-mono font-medium hover:border-cyan-500/30 hover:text-white transition-all duration-300 cursor-default"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-950/10 border border-cyan-900/20 text-xs text-white/80 font-mono font-medium hover:border-cyan-500/30 hover:text-white transition-all duration-300 cursor-default"
                 >
                   <span>{tech.icon}</span>
                   <span>{tech.name}</span>
@@ -483,7 +483,7 @@ export default function Landing() {
         {/* ── SECTION 8: Holographic Call-To-Action ── */}
         <section className="py-16 pb-24">
           <ScrollReveal>
-            <div className="relative rounded-2xl border border-white/[0.06] bg-gradient-to-b from-zinc-950 to-black p-10 md:p-16 overflow-hidden text-center shadow-2xl">
+            <div className="relative rounded-2xl border border-cyan-500/10 bg-gradient-to-b from-cyan-950/5 to-indigo-950/5 backdrop-blur-[2px] p-10 md:p-16 overflow-hidden text-center shadow-2xl">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(34,211,238,0.1),transparent_70%)]" />
               
               <span className="text-3xl mb-6 inline-block filter drop-shadow-[0_0_12px_rgba(34,211,238,0.4)]">

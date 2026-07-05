@@ -47,17 +47,17 @@ export default function MatrixBackground({ attackActive = false, intensity = 0.5
         
         // Define color based on active attack state
         if (attackActive) {
-          // Under attack: highlight some columns in bright threat red/orange
-          if (Math.random() < intensity * 0.3) {
-            ctx.fillStyle = 'rgba(239, 68, 68, 0.18)'; // Muted Threat Red
+          // Under attack: threat red/orange highlight
+          if (Math.random() < intensity * 0.4) {
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.35)'; // Vibrant Threat Red
           } else {
-            ctx.fillStyle = 'rgba(34, 211, 238, 0.06)'; // Muted Faded Cyan
+            ctx.fillStyle = 'rgba(34, 211, 238, 0.15)'; // Faded Cyan
           }
         } else {
-          // Normal state: very subtle glowing cyber cyan/blue shades (preventing clutter)
+          // Normal state: glowing cyber cyan/blue shades (cyber feel)
           ctx.fillStyle = Math.random() < 0.15 
-            ? 'rgba(34, 211, 238, 0.06)' // Faint Cyan
-            : 'rgba(99, 102, 241, 0.03)'; // Faint Indigo
+            ? 'rgba(34, 211, 238, 0.22)' // Glowing Cyan
+            : 'rgba(99, 102, 241, 0.12)'; // Deep Indigo Blue
         }
 
         const x = i * fontSize;
