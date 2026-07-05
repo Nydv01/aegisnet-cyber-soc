@@ -1,21 +1,15 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 /*
  * ═══════════════════════════════════════════════════════════════════
  *  AegisNet — Premium Cybersecurity SOC Design System
  * ═══════════════════════════════════════════════════════════════════
- *  Inspired by 21st.dev component aesthetics:
- *  - Aurora/gradient animated backgrounds
- *  - Glow border cards with spotlight hover
- *  - Animated mesh gradients
- *  - Particle grid overlay
- *  - Smooth micro-interactions
- *  - Glassmorphism with depth layers
- *  - Premium typography (Inter + JetBrains Mono)
- *  - Responsive grid system
- * ═══════════════════════════════════════════════════════════════════
  */
 
 /* ═══════════════════ IMPORTS ═══════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+
 
 /* ═══════════════════ CSS CUSTOM PROPERTIES ═══════════════════ */
 :root {
