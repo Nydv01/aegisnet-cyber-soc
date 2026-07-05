@@ -11,7 +11,6 @@ import TextScramble from './TextScramble';
 import { BackgroundPaths } from './ui/background-paths';
 import { SplineScene } from './ui/spline';
 import { MagicDust } from './ui/magic-dust';
-import { ZoomParallax } from './ui/zoom-parallax';
 import { HoverSpotlight } from './ui/spotlight';
 
 // Floating Background Shape Component
@@ -135,16 +134,6 @@ export default function Landing() {
     { name: 'Framer Motion', icon: '✨' }
   ];
 
-  // Theme-relevant Cybersecurity visual assets for the zoom parallax
-  const parallaxImages = [
-    { src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80', alt: 'Quantum Neural Ledger' },
-    { src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80', alt: 'Aegis Core Firewall Node' },
-    { src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80', alt: 'Neural Network Synapse' },
-    { src: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80', alt: 'High-Density Datacenter Stacks' },
-    { src: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80', alt: 'ML Analytics Command Matrix' },
-    { src: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80', alt: 'Global Telemetry Core Gateway' },
-    { src: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=1200&q=80', alt: 'Quantum Crypto Segment' }
-  ];
 
   // Particle Synthesis Sequence
   const dustSequence = [
@@ -387,21 +376,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── SECTION 5: Zoom Parallax Cybersecurity Ledgers ── */}
-      <section className="relative py-24 bg-transparent">
-        <div className="text-center mb-16 max-w-lg mx-auto px-6">
-          <span className="text-[0.65rem] tracking-[0.25em] font-extrabold text-cyan-400 uppercase">
-            Visual Telemetry Grid
-          </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-4 mb-4">
-            Parallax Node Cluster Showcase
-          </h2>
-          <p className="text-sm text-neutral-500 font-light leading-relaxed">
-            Scroll down to zoom into our active node clusters, remote postgresql databases, and core model weights.
-          </p>
-        </div>
-        <ZoomParallax images={parallaxImages} />
-      </section>
 
       <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 10 }}>
         
