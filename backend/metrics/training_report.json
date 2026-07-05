@@ -1,0 +1,110 @@
+{
+  "ids": {
+    "model": "RandomForestClassifier",
+    "n_estimators": 200,
+    "accuracy": 1.0,
+    "cv_accuracy_mean": 1.0,
+    "cv_accuracy_std": 0.0,
+    "roc_auc_weighted": 1.0,
+    "confusion_matrix": [
+      [
+        400,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        400,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        400,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        400,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        400
+      ]
+    ],
+    "feature_importance": {
+      "srv_count": 0.1202,
+      "num_failed_logins": 0.1201,
+      "rerror_rate": 0.1074,
+      "serror_rate": 0.1008,
+      "packet_rate": 0.0838,
+      "same_srv_rate": 0.0803,
+      "hot_indicators": 0.0729,
+      "num_access_files": 0.0566,
+      "count": 0.0511,
+      "dst_bytes": 0.0395,
+      "src_bytes": 0.0381,
+      "num_compromised": 0.0333,
+      "flow_duration": 0.0303,
+      "packet_size": 0.023,
+      "flag_count": 0.011,
+      "urgent_count": 0.0103,
+      "num_root": 0.009,
+      "num_file_creations": 0.0087,
+      "protocol_type": 0.0034,
+      "wrong_fragment": 0.0004
+    },
+    "classes": [
+      "brute_force",
+      "ddos",
+      "normal",
+      "port_scan",
+      "sql_injection"
+    ]
+  },
+  "phishing": {
+    "model": "LogisticRegression",
+    "n_tfidf_features": 500,
+    "n_hand_features": 18,
+    "total_features": 518,
+    "accuracy": 1.0,
+    "cv_accuracy_mean": 1.0,
+    "cv_accuracy_std": 0.0,
+    "roc_auc": 1.0,
+    "confusion_matrix": [
+      [
+        600,
+        0
+      ],
+      [
+        0,
+        600
+      ]
+    ]
+  },
+  "defense_agent": {
+    "total_episodes": 5000,
+    "final_epsilon": 0.082,
+    "avg_reward_last_100": 164.78,
+    "avg_length_last_100": 116.3,
+    "q_table_nonzero": 1832,
+    "q_table_shape": [
+      375,
+      7
+    ],
+    "eval_avg_reward": 210.78,
+    "eval_avg_health": 9.6,
+    "eval_survival_rate": 0.79
+  }
+}
