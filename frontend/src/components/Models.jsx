@@ -6,44 +6,49 @@ import { AnimatedBorderCard, TerminalTextStream } from './ui/cyber-effects';
 
 const API = 'http://localhost:8000';
 
-/**
- * Models — AI/ML Models Showcase Page
- * Displays confusion matrices, feature importance charts, ROC curves,
- * training pipeline diagrams, model comparison tables, and Q-table heatmaps.
- */
-
-// Confusion Matrix Heatmap component
+// ─── Holographic Confusion Matrix Heatmap Component ──────────────────
 function ConfusionMatrix({ matrix, labels }) {
   if (!matrix || !labels) return null;
   const maxVal = Math.max(...matrix.flat());
 
   return (
-    <div>
-      <div style={{ display: 'flex', gap: 2, marginBottom: 6 }}>
-        <div style={{ width: 60 }} />
+    <div className="relative p-5 bg-zinc-950/60 border border-zinc-900 rounded-xl overflow-hidden shadow-xl">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none" />
+      
+      <div style={{ display: 'flex', gap: 4, marginBottom: 8 }} className="font-mono text-[0.58rem] text-zinc-500 font-bold uppercase">
+        <div style={{ width: 70 }} />
         {labels.map((l, i) => (
-          <div key={i} className="confusion-label" style={{ flex: 1, textAlign: 'center', fontSize: '0.58rem' }}>
-            {l.slice(0, 6)}
+          <div key={i} style={{ flex: 1, textAlign: 'center' }}>
+            {l.slice(0, 7)}
           </div>
         ))}
       </div>
       {matrix.map((row, ri) => (
-        <div key={ri} style={{ display: 'flex', gap: 2, marginBottom: 2 }}>
-          <div className="confusion-label" style={{ width: 60, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 6, fontSize: '0.58rem' }}>
-            {labels[ri]?.slice(0, 6)}
+        <div key={ri} style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
+          <div className="font-mono text-[0.58rem] text-zinc-500 font-bold uppercase" style={{ width: 70, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 8 }}>
+            {labels[ri]?.slice(0, 7)}
           </div>
           {row.map((val, ci) => {
             const intensity = maxVal > 0 ? val / maxVal : 0;
             const isDiag = ri === ci;
             const bg = isDiag
-              ? `rgba(16, 185, 129, ${0.1 + intensity * 0.6})`
-              : `rgba(239, 68, 68, ${intensity * 0.4})`;
-            const color = intensity > 0.5 ? '#fff' : 'var(--text-secondary)';
+              ? `rgba(255, 255, 255, ${0.03 + intensity * 0.35})`
+              : `rgba(239, 68, 68, ${intensity * 0.18})`;
+            const color = intensity > 0.4 ? '#ffffff' : 'var(--text-secondary)';
             return (
               <div
                 key={ci}
-                className="confusion-cell"
-                style={{ flex: 1, background: bg, color, fontSize: '0.72rem' }}
+                className="confusion-cell relative font-mono font-bold transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_12px_rgba(255,255,255,0.1)] hover:border-zinc-500 cursor-default"
+                style={{ 
+                  flex: 1, 
+                  background: bg, 
+                  color, 
+                  fontSize: '0.72rem', 
+                  padding: '12px 0', 
+                  textAlign: 'center', 
+                  borderRadius: 6,
+                  border: '1px solid rgba(255, 255, 255, 0.03)'
+                }}
                 title={`True: ${labels[ri]}, Pred: ${labels[ci]}, Count: ${val}`}
               >
                 {val}
@@ -56,7 +61,7 @@ function ConfusionMatrix({ matrix, labels }) {
   );
 }
 
-// Feature Importance chart
+// ─── Dynamic Feature Importance Chart ────────────────────────────────
 function FeatureImportanceChart({ features, maxBars = 8 }) {
   if (!features) return null;
   const sorted = Object.entries(features)
@@ -65,33 +70,37 @@ function FeatureImportanceChart({ features, maxBars = 8 }) {
   const maxVal = sorted[0]?.[1] || 1;
 
   return (
-    <div>
+    <div className="space-y-3 p-5 bg-zinc-950/60 border border-zinc-900 rounded-xl relative overflow-hidden shadow-xl">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none" />
       {sorted.map(([name, val]) => (
-        <div key={name} className="feature-importance-bar">
-          <div className="fi-bar-label">{name}</div>
-          <div className="fi-bar-track">
-            <div className="fi-bar-fill" style={{ width: `${(val / maxVal) * 100}%` }} />
+        <div key={name} className="feature-importance-bar space-y-1.5 relative z-10">
+          <div className="flex justify-between items-center text-[0.62rem] font-mono text-zinc-500">
+            <span className="font-bold uppercase tracking-wider">{name.replace(/_/g, ' ')}</span>
+            <span className="text-white">{(val * 100).toFixed(1)}%</span>
           </div>
-          <div className="fi-bar-value">{(val * 100).toFixed(1)}%</div>
+          <div className="fi-bar-track h-1.5 bg-zinc-900 rounded overflow-hidden">
+            <div 
+              className="fi-bar-fill h-full bg-gradient-to-r from-zinc-500 via-white to-zinc-400 rounded transition-all duration-1000 ease-out" 
+              style={{ width: `${(val / maxVal) * 100}%`, filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.15))' }} 
+            />
+          </div>
         </div>
       ))}
     </div>
   );
 }
 
-// SVG ROC Curve (simulated data)
+// ─── SVG ROC Curve with grid ticks ───────────────────────────────────
 function ROCCurve({ auc = 0.99 }) {
-  // Generate a smooth ROC curve shape based on AUC
   const points = [];
   const n = 50;
   for (let i = 0; i <= n; i++) {
     const fpr = i / n;
-    // Power curve shape that approximates AUC
     const tpr = Math.pow(fpr, 1 - auc * 0.95);
     points.push({ fpr, tpr: Math.min(1, tpr) });
   }
 
-  const w = 260, h = 180, pad = 35;
+  const w = 280, h = 180, pad = 35;
   const plotW = w - pad * 2, plotH = h - pad * 2;
 
   const pathData = points
@@ -103,31 +112,32 @@ function ROCCurve({ auc = 0.99 }) {
     .join(' ');
 
   return (
-    <div className="model-chart-container" style={{ height: 200 }}>
-      <svg viewBox={`0 0 ${w} ${h}`}>
-        {/* Grid */}
+    <div className="model-chart-container p-5 bg-zinc-950/60 border border-zinc-900 rounded-xl relative overflow-hidden shadow-xl flex justify-center">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none" />
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-[260px] h-auto z-10">
+        {/* Radar grid coordinates */}
         {[0.25, 0.5, 0.75].map((v) => (
           <line key={v} x1={pad} y1={pad + (1 - v) * plotH} x2={pad + plotW} y2={pad + (1 - v) * plotH}
-            className="chart-grid-line" />
+            stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" strokeDasharray="3 3" />
         ))}
-        {/* Diagonal line (random classifier) */}
+        {/* Diagonal baseline */}
         <line x1={pad} y1={pad + plotH} x2={pad + plotW} y2={pad}
-          stroke="rgba(239, 68, 68, 0.2)" strokeWidth="1" strokeDasharray="4 4" />
-        {/* ROC curve */}
-        <path d={pathData} fill="none" stroke="var(--neon-cyan)" strokeWidth="2.5"
-          filter="drop-shadow(0 0 6px rgba(34, 211, 238, 0.4))" strokeLinecap="round" />
-        {/* Area under curve */}
+          stroke="rgba(239, 68, 68, 0.15)" strokeWidth="1" strokeDasharray="4 4" />
+        {/* Glowing ROC curve */}
+        <path d={pathData} fill="none" stroke="#ffffff" strokeWidth="2.5"
+          filter="drop-shadow(0 0 6px rgba(255,255,255,0.3))" strokeLinecap="round" />
+        {/* AUC shade area */}
         <path
           d={`${pathData} L ${(pad + plotW).toFixed(1)} ${(pad + plotH).toFixed(1)} L ${pad} ${(pad + plotH).toFixed(1)} Z`}
-          fill="rgba(34, 211, 238, 0.06)"
+          fill="rgba(255, 255, 255, 0.02)"
         />
-        {/* Axis labels */}
-        <text x={w / 2} y={h - 4} textAnchor="middle" className="chart-axis-label">FPR</text>
-        <text x={8} y={h / 2} textAnchor="middle" className="chart-axis-label"
-          transform={`rotate(-90, 8, ${h / 2})`}>TPR</text>
-        {/* AUC label */}
-        <text x={pad + plotW - 10} y={pad + 20} textAnchor="end" fill="var(--neon-cyan)"
-          fontSize="0.7rem" fontWeight="700" fontFamily="var(--font-mono)">
+        {/* Axes coordinates */}
+        <text x={w / 2} y={h - 4} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="var(--font-mono)">FPR</text>
+        <text x={12} y={h / 2} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="var(--font-mono)"
+          transform={`rotate(-90, 12, ${h / 2})`}>TPR</text>
+        {/* AUC value tag */}
+        <text x={pad + plotW - 10} y={pad + 20} textAnchor="end" fill="#ffffff"
+          fontSize="9" fontWeight="800" fontFamily="var(--font-mono)" filter="drop-shadow(0 0 3px rgba(255,255,255,0.2))">
           AUC = {auc.toFixed(4)}
         </text>
       </svg>
@@ -135,11 +145,10 @@ function ROCCurve({ auc = 0.99 }) {
   );
 }
 
-// Training Reward Curve (simulated from episode rewards)
+// ─── SVG Training Reward Curve ──────────────────────────────────────
 function RewardCurve({ rewards }) {
   if (!rewards || rewards.length === 0) return null;
 
-  // Downsample to ~100 points with running average
   const windowSize = Math.max(1, Math.floor(rewards.length / 100));
   const smoothed = [];
   for (let i = 0; i < rewards.length; i += windowSize) {
@@ -162,36 +171,43 @@ function RewardCurve({ rewards }) {
     .join(' ');
 
   return (
-    <div className="reward-curve-container">
-      <svg viewBox={`0 0 ${w} ${h}`}>
+    <div className="reward-curve-container p-5 bg-zinc-950/60 border border-zinc-900 rounded-xl relative overflow-hidden shadow-xl">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none" />
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto z-10">
         {[0.25, 0.5, 0.75].map((v) => (
           <line key={v} x1={pad} y1={pad + (1 - v) * plotH} x2={pad + plotW} y2={pad + (1 - v) * plotH}
-            className="chart-grid-line" />
+            stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" strokeDasharray="3 3" />
         ))}
-        <path d={pathData} fill="none" stroke="var(--neon-green)" strokeWidth="2"
-          filter="drop-shadow(0 0 6px rgba(16, 185, 129, 0.4))" strokeLinecap="round" />
+        <path d={pathData} fill="none" stroke="#ffffff" strokeWidth="2"
+          filter="drop-shadow(0 0 6px rgba(255,255,255,0.3))" strokeLinecap="round" />
         <path
           d={`${pathData} L ${(pad + plotW).toFixed(1)} ${(pad + plotH).toFixed(1)} L ${pad} ${(pad + plotH).toFixed(1)} Z`}
-          fill="rgba(16, 185, 129, 0.06)"
+          fill="rgba(255, 255, 255, 0.02)"
         />
-        <text x={w / 2} y={h - 4} textAnchor="middle" className="chart-axis-label">Episode</text>
-        <text x={8} y={h / 2} textAnchor="middle" className="chart-axis-label"
-          transform={`rotate(-90, 8, ${h / 2})`}>Reward</text>
+        <text x={w / 2} y={h - 4} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="var(--font-mono)">Episode</text>
+        <text x={12} y={h / 2} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="var(--font-mono)"
+          transform={`rotate(-90, 12, ${h / 2})`}>Reward</text>
       </svg>
     </div>
   );
 }
 
-// Pipeline Diagram
+// ─── Visual Pipeline Diagram with Connection vectors ──────────────────
 function PipelineDiagram({ steps }) {
   return (
-    <div className="pipeline-diagram">
+    <div className="pipeline-diagram flex flex-wrap gap-4 items-center justify-center p-5 bg-zinc-950/60 border border-zinc-900 rounded-xl relative overflow-hidden shadow-xl">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none" />
       {steps.map((step, i) => (
         <React.Fragment key={i}>
-          {i > 0 && <span className="pipeline-arrow">→</span>}
-          <div className="pipeline-step">
-            <span className="step-icon">{step.icon}</span>
-            <span className="step-label">{step.label}</span>
+          {i > 0 && (
+            <div className="flex items-center gap-0.5 text-zinc-700 font-mono text-[0.62rem] select-none">
+              <span className="h-1 w-1 bg-zinc-600 rounded-full animate-ping" />
+              <span>---</span>
+            </div>
+          )}
+          <div className="pipeline-step flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg shadow relative z-10 hover:border-zinc-700/60 transition-colors cursor-default">
+            <span className="step-icon text-base filter drop-shadow-[0_0_4px_rgba(255,255,255,0.1)]">{step.icon}</span>
+            <span className="step-label font-mono text-[0.68rem] font-bold text-zinc-300 uppercase tracking-wider">{step.label}</span>
           </div>
         </React.Fragment>
       ))}
@@ -204,7 +220,6 @@ export default function Models() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Try to fetch training metrics from backend
     const fetchMetrics = async () => {
       try {
         const res = await fetch(`${API}/api/models/metrics`);
@@ -212,15 +227,14 @@ export default function Models() {
           setMetrics(await res.json());
         }
       } catch (e) {
-        // Use fallback demo data
-        console.log('[Models] Using demo metrics');
+        console.log('[Models] Using demo metrics fallback');
       }
       setLoading(false);
     };
     fetchMetrics();
   }, []);
 
-  // Fallback demo data if API not available
+  // Fallback demo weights if API not online
   const ids = metrics?.ids || {
     model: 'RandomForestClassifier',
     n_estimators: 200,
@@ -274,266 +288,225 @@ export default function Models() {
   };
 
   return (
-    <div>
-      <div className="page-header">
-        <h1>
-          🧠 <TerminalTextStream text="AI / ML Models" speed={40} />
-        </h1>
-        <p>Trained scikit-learn classifiers, reinforcement learning agents, and model performance analytics</p>
+    <div className="models-wrapper max-w-7xl mx-auto py-10 px-4 md:px-8 space-y-10">
+      
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-zinc-900">
+        <div>
+          <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-white animate-pulse" />
+            <TerminalTextStream text="🧠 ACTIVE MACHINE LEARNING DECK" speed={30} />
+          </h1>
+          <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest mt-1">
+            SCIKIT-LEARN TRAINED CLASSIFIERS AND POLICY TABLE VALUATION LEDGERS
+          </p>
+        </div>
       </div>
 
-      {/* ── Training Pipeline ── */}
+      {/* ── Section 1: End-To-End Training Pipeline ── */}
       <ScrollReveal>
-        <AnimatedBorderCard style={{ marginBottom: 20 }}>
-          <div style={{ padding: 20 }}>
-            <div className="card-header">
-              <h2>📐 Training Pipeline</h2>
-              <span className="card-badge badge-info">END-TO-END</span>
+        <AnimatedBorderCard className="luxury-card p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-lg font-bold text-white tracking-tight">📐 Model Pipeline Architecture</h2>
+              <span className="text-[0.55rem] font-mono text-zinc-500 uppercase font-bold">Data serialization and standardization loops</span>
             </div>
-            <PipelineDiagram steps={[
-              { icon: '📊', label: 'Synthetic Data' },
-              { icon: '🔧', label: 'Feature Engineering' },
-              { icon: '⚖️', label: 'StandardScaler' },
-              { icon: '🧠', label: 'Model Training' },
-              { icon: '📈', label: 'Cross-Validation' },
-              { icon: '✅', label: 'Evaluation' },
-              { icon: '💾', label: 'Serialization' },
-            ]} />
+            <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-[0.58rem] font-bold">
+              PIPELINE: ACTIVE
+            </span>
           </div>
+          <PipelineDiagram steps={[
+            { icon: '📊', label: 'Synthetic Generator' },
+            { icon: '🔧', label: 'Vector Engineers' },
+            { icon: '⚖️', label: 'Standard Scaler' },
+            { icon: '🧠', label: 'Fit Classifiers' },
+            { icon: '📈', label: 'Fold Evaluation' },
+            { icon: '✅', label: 'Validate Matrices' },
+            { icon: '💾', label: 'Pickle Dump' },
+          ]} />
         </AnimatedBorderCard>
       </ScrollReveal>
 
-      {/* ── Model Cards Grid ── */}
-      <div className="models-page-grid">
-        {/* IDS Model */}
-        <ScrollReveal delay={100}>
-          <AnimatedBorderCard style={{ height: '100%' }}>
-            <div style={{ padding: 20 }}>
-              <div className="card-header">
-                <h2>🔍 Intrusion Detection System</h2>
-                <span className="card-badge badge-live">ACTIVE</span>
+      {/* ── Section 2: Model Zoo comparison grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* IDS Model Zoo Card */}
+        <ScrollReveal>
+          <AnimatedBorderCard className="luxury-card p-6 space-y-6">
+            <div className="flex justify-between items-center border-b border-zinc-900 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">🔍 Intrusion Detection System</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase font-bold">Random Forest classifier mapping flow events</span>
               </div>
+              <span className="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-900 text-emerald-400 font-mono text-[0.58rem] font-bold">
+                ACTIVE
+              </span>
+            </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                  <div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Model</div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--neon-cyan)' }}>{ids.model}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estimators</div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>{ids.n_estimators}</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
-                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-green)' }}>
-                      {(ids.accuracy * 100).toFixed(1)}%
-                    </div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Accuracy</div>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(34, 211, 238, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(34, 211, 238, 0.1)' }}>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-cyan)' }}>
-                      {(ids.cv_accuracy_mean * 100).toFixed(1)}%
-                    </div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>CV Mean</div>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(168, 85, 247, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(168, 85, 247, 0.1)' }}>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-purple-bright)' }}>
-                      {ids.roc_auc_weighted?.toFixed(4)}
-                    </div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>ROC-AUC</div>
-                  </div>
-                </div>
+            <div className="flex gap-8 font-mono text-[0.68rem] text-zinc-400">
+              <div>
+                <span className="text-zinc-500 block">MODEL TYPE:</span>
+                <span className="text-white font-bold">{ids.model}</span>
               </div>
+              <div>
+                <span className="text-zinc-500 block">ESTIMATORS:</span>
+                <span className="text-white font-bold">{ids.n_estimators}</span>
+              </div>
+            </div>
 
-              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Confusion Matrix</h3>
+            <div className="grid grid-cols-3 gap-4 font-mono">
+              <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg text-center">
+                <span className="text-lg font-black text-emerald-400">{(ids.accuracy * 100).toFixed(1)}%</span>
+                <span className="text-[0.52rem] text-zinc-500 block mt-1">ACCURACY</span>
+              </div>
+              <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg text-center">
+                <span className="text-lg font-black text-white">{(ids.cv_accuracy_mean * 100).toFixed(1)}%</span>
+                <span className="text-[0.52rem] text-zinc-500 block mt-1">CV MEAN</span>
+              </div>
+              <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg text-center">
+                <span className="text-lg font-black text-zinc-300">{ids.roc_auc_weighted?.toFixed(4)}</span>
+                <span className="text-[0.52rem] text-zinc-500 block mt-1">ROC-AUC</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest">Confusion Matrix</h3>
               <ConfusionMatrix matrix={ids.confusion_matrix} labels={ids.classes} />
+            </div>
 
-              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>Feature Importance</h3>
-              <FeatureImportanceChart features={ids.feature_importance} maxBars={6} />
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest">Feature Importance</h3>
+              <FeatureImportanceChart features={ids.feature_importance} maxBars={5} />
+            </div>
 
-              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>ROC Curve</h3>
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest">ROC Analytics Waveform</h3>
               <ROCCurve auc={ids.roc_auc_weighted || 0.999} />
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
 
-        {/* Phishing Model */}
-        <ScrollReveal delay={200}>
-          <AnimatedBorderCard style={{ height: '100%' }}>
-            <div style={{ padding: 20 }}>
-              <div className="card-header">
-                <h2>🌐 Phishing URL Classifier</h2>
-                <span className="card-badge badge-live">ACTIVE</span>
+        {/* Phishing Model Card */}
+        <ScrollReveal>
+          <AnimatedBorderCard className="luxury-card p-6 space-y-6">
+            <div className="flex justify-between items-center border-b border-zinc-900 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">🌐 Phishing URL Classifier</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase font-bold">Lexical TF-IDF Logistic Regression scanner</span>
               </div>
+              <span className="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-900 text-emerald-400 font-mono text-[0.58rem] font-bold">
+                ACTIVE
+              </span>
+            </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                  <div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Model</div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--neon-cyan)' }}>{phishing.model}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Features</div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>{phishing.total_features}</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
-                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(16, 185, 129, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-green)' }}>
-                      {(phishing.accuracy * 100).toFixed(1)}%
-                    </div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Accuracy</div>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(34, 211, 238, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(34, 211, 238, 0.1)' }}>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-cyan)' }}>
-                      {(phishing.cv_accuracy_mean * 100).toFixed(1)}%
-                    </div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>CV Mean</div>
-                  </div>
-                  <div style={{ textAlign: 'center', padding: 10, background: 'rgba(168, 85, 247, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(168, 85, 247, 0.1)' }}>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--neon-purple-bright)' }}>
-                      {phishing.roc_auc?.toFixed(4)}
-                    </div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>ROC-AUC</div>
-                  </div>
-                </div>
+            <div className="flex gap-8 font-mono text-[0.68rem] text-zinc-400">
+              <div>
+                <span className="text-zinc-500 block">MODEL TYPE:</span>
+                <span className="text-white font-bold">{phishing.model}</span>
               </div>
+              <div>
+                <span className="text-zinc-500 block">FEATURE SCALE:</span>
+                <span className="text-white font-bold">{phishing.total_features} DIM</span>
+              </div>
+            </div>
 
-              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Confusion Matrix</h3>
-              <ConfusionMatrix matrix={phishing.confusion_matrix} labels={['Legitimate', 'Phishing']} />
+            <div className="grid grid-cols-3 gap-4 font-mono">
+              <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg text-center">
+                <span className="text-lg font-black text-emerald-400">{(phishing.accuracy * 100).toFixed(1)}%</span>
+                <span className="text-[0.52rem] text-zinc-500 block mt-1">ACCURACY</span>
+              </div>
+              <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg text-center">
+                <span className="text-lg font-black text-white">{(phishing.cv_accuracy_mean * 100).toFixed(1)}%</span>
+                <span className="text-[0.52rem] text-zinc-500 block mt-1">CV MEAN</span>
+              </div>
+              <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg text-center">
+                <span className="text-lg font-black text-zinc-300">{phishing.roc_auc?.toFixed(4)}</span>
+                <span className="text-[0.52rem] text-zinc-500 block mt-1">ROC-AUC</span>
+              </div>
+            </div>
 
-              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>Feature Pipeline</h3>
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest">Confusion Matrix</h3>
+              <ConfusionMatrix matrix={phishing.confusion_matrix} labels={['Safe', 'Phish']} />
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest">NLP Feature extraction</h3>
               <PipelineDiagram steps={[
-                { icon: '🔗', label: 'Raw URL' },
-                { icon: '✂️', label: 'Tokenize' },
-                { icon: '📝', label: 'TF-IDF (500)' },
-                { icon: '🔧', label: '18 Hand Features' },
-                { icon: '⚖️', label: 'Scale + Stack' },
-                { icon: '📐', label: 'LogReg Predict' },
+                { icon: '🔗', label: 'Raw URL Input' },
+                { icon: '✂️', label: 'Entropy Parser' },
+                { icon: '📝', label: 'TF-IDF Lexer' },
+                { icon: '🔧', label: 'Scale stack' },
+                { icon: '📐', label: 'LogReg Pred' },
               ]} />
+            </div>
 
-              <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>ROC Curve</h3>
+            <div className="space-y-4">
+              <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest">ROC Analytics Waveform</h3>
               <ROCCurve auc={phishing.roc_auc || 0.999} />
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
+
       </div>
 
-      {/* ── Q-Learning Agent ── */}
-      <ScrollReveal delay={300}>
-        <AnimatedBorderCard style={{ marginTop: 20 }}>
-          <div style={{ padding: 20 }}>
-            <div className="card-header">
-              <h2>🤖 Q-Learning Defense Agent</h2>
-              <span className="card-badge badge-info">REINFORCEMENT LEARNING</span>
+      {/* ── Section 3: Reinforcement Learning agent details ── */}
+      <ScrollReveal>
+        <AnimatedBorderCard className="luxury-card p-6 space-y-6">
+          <div className="flex justify-between items-center border-b border-zinc-900 pb-4">
+            <div>
+              <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">🤖 Q-Learning Autonomous Agent</h2>
+              <span className="text-[0.55rem] font-mono text-zinc-500 uppercase font-bold">Policy table actions mapping threat states</span>
             </div>
+            <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-[0.58rem] font-bold">
+              RL_ENGINE: STANDBY
+            </span>
+          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 20 }}>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 font-mono">
             {[
-              { label: 'Episodes Trained', value: agent.total_episodes?.toLocaleString(), color: 'var(--neon-cyan)' },
-              { label: 'Final Epsilon', value: agent.final_epsilon?.toFixed(3), color: 'var(--neon-purple-bright)' },
-              { label: 'Avg Reward (Last 100)', value: agent.avg_reward_last_100?.toFixed(1), color: 'var(--neon-green)' },
-              { label: 'Eval Avg Reward', value: agent.eval_avg_reward?.toFixed(1), color: 'var(--neon-blue-bright)' },
-              { label: 'Avg Final Health', value: `${agent.eval_avg_health?.toFixed(0)}%`, color: 'var(--neon-green)' },
-              { label: 'Survival Rate', value: `${((agent.eval_survival_rate || 0) * 100).toFixed(0)}%`, color: agent.eval_survival_rate > 0.8 ? 'var(--neon-green)' : 'var(--neon-orange)' },
+              { label: 'Episodes', value: agent.total_episodes?.toLocaleString() },
+              { label: 'Epsilon', value: agent.final_epsilon?.toFixed(3) },
+              { label: 'Avg Reward', value: agent.avg_reward_last_100?.toFixed(1) },
+              { label: 'Eval Reward', value: agent.eval_avg_reward?.toFixed(1) },
+              { label: 'Eval Health', value: `${agent.eval_avg_health?.toFixed(0)}%` },
+              { label: 'Survival Rate', value: `${((agent.eval_survival_rate || 0) * 100).toFixed(0)}%` },
             ].map((s, i) => (
-              <div key={i} style={{ textAlign: 'center', padding: 14, background: 'rgba(15, 23, 42, 0.4)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
-                <div style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: s.color }}>
-                  {s.value}
-                </div>
-                <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4 }}>
-                  {s.label}
-                </div>
+              <div key={i} className="bg-zinc-950/60 border border-zinc-900 p-4 rounded-xl text-center">
+                <span className="text-base font-black text-white block">{s.value}</span>
+                <span className="text-[0.52rem] text-zinc-500 uppercase block mt-1 tracking-wider">{s.label}</span>
               </div>
             ))}
           </div>
 
-          <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Training Reward Curve</h3>
-          <RewardCurve rewards={agent.episode_rewards} />
+          <div className="space-y-4">
+            <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest">Episode Reward convergence</h3>
+            <RewardCurve rewards={agent.episode_rewards} />
+          </div>
 
-          <h3 style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginTop: 20, marginBottom: 10 }}>Agent Environment</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
-            <div style={{ padding: 14, background: 'rgba(15, 23, 42, 0.3)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>State Space</div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                5 Threat Levels × 5 Attack Types × 5 Health Levels × 3 Load Levels = <strong style={{ color: 'var(--neon-cyan)' }}>{agent.q_table_shape?.[0] || 375} states</strong>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+            <div className="bg-zinc-950/40 border border-zinc-900 p-4 rounded-xl">
+              <span className="text-[0.55rem] text-zinc-500 block uppercase tracking-wider mb-2">State Dimensions</span>
+              <div className="text-zinc-300">
+                5 Threat × 5 Attack × 5 Health × 3 Load = <strong className="text-white">{agent.q_table_shape?.[0] || 375} states</strong>
               </div>
             </div>
-            <div style={{ padding: 14, background: 'rgba(15, 23, 42, 0.3)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>Action Space</div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                <strong style={{ color: 'var(--neon-cyan)' }}>{agent.q_table_shape?.[1] || 7} actions</strong>: do_nothing, block_ip, rate_limit, deploy_honeypot, patch_vulnerability, isolate_segment, escalate_alert
+            <div className="bg-zinc-950/40 border border-zinc-900 p-4 rounded-xl">
+              <span className="text-[0.55rem] text-zinc-500 block uppercase tracking-wider mb-2">Action Vectors</span>
+              <div className="text-zinc-300 truncate">
+                <strong className="text-white">{agent.q_table_shape?.[1] || 7} mitigations</strong>: do_nothing, block_ip, rate_limit...
               </div>
             </div>
-            <div style={{ padding: 14, background: 'rgba(15, 23, 42, 0.3)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)' }}>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>Hyperparameters</div>
-              <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                α=0.1 · γ=0.95 · ε-decay=0.9995 · ε-min=0.05
+            <div className="bg-zinc-950/40 border border-zinc-900 p-4 rounded-xl">
+              <span className="text-[0.55rem] text-zinc-500 block uppercase tracking-wider mb-2">Policy Params</span>
+              <div className="text-zinc-300 font-mono">
+                α=0.1 · γ=0.95 · ε=0.05
               </div>
-            </div>
             </div>
           </div>
         </AnimatedBorderCard>
       </ScrollReveal>
 
-      {/* ── Model Comparison Table ── */}
-      <ScrollReveal delay={400}>
-        <AnimatedBorderCard style={{ marginTop: 20 }}>
-          <div style={{ padding: 20 }}>
-            <div className="card-header">
-              <h2>📊 Model Comparison</h2>
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="model-comparison-table">
-                <thead>
-                  <tr>
-                    <th>Model</th>
-                    <th>Type</th>
-                    <th>Accuracy</th>
-                    <th>CV Mean</th>
-                    <th>ROC-AUC</th>
-                    <th>Features</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ fontWeight: 700 }}>🔍 IDS Classifier</td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>RandomForest</td>
-                    <td><span className="metric-highlight excellent">{(ids.accuracy * 100).toFixed(1)}%</span></td>
-                    <td><span className="metric-highlight excellent">{(ids.cv_accuracy_mean * 100).toFixed(1)}%</span></td>
-                    <td><span className="metric-highlight excellent">{ids.roc_auc_weighted?.toFixed(4)}</span></td>
-                    <td>20</td>
-                    <td><span className="card-badge badge-live">LIVE</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 700 }}>🌐 Phishing Classifier</td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>LogReg + TF-IDF</td>
-                    <td><span className="metric-highlight excellent">{(phishing.accuracy * 100).toFixed(1)}%</span></td>
-                    <td><span className="metric-highlight excellent">{(phishing.cv_accuracy_mean * 100).toFixed(1)}%</span></td>
-                    <td><span className="metric-highlight excellent">{phishing.roc_auc?.toFixed(4)}</span></td>
-                    <td>{phishing.total_features}</td>
-                    <td><span className="card-badge badge-live">LIVE</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ fontWeight: 700 }}>🤖 Defense Agent</td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>Q-Learning</td>
-                    <td><span className="metric-highlight good">{((agent.eval_survival_rate || 0) * 100).toFixed(0)}%</span></td>
-                    <td><span className="metric-highlight good">{agent.eval_avg_health?.toFixed(0)}%</span></td>
-                    <td>—</td>
-                    <td>375×7</td>
-                    <td><span className="card-badge badge-live">LIVE</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </AnimatedBorderCard>
-      </ScrollReveal>
     </div>
   );
 }

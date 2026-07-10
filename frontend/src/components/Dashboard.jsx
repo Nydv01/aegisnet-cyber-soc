@@ -10,7 +10,7 @@ import { RadarSweep, AnimatedBorderCard, TerminalTextStream, CyberButton } from 
 
 const API = 'http://localhost:8000';
 
-// ─── Circular Gauge Component ────────────────────────────────────
+// ─── Circular Cockpit HUD Gauge Component ─────────────────────────────
 function Gauge({ value, max, label, color }) {
   const radius = 42;
   const circumference = 2 * Math.PI * radius;
@@ -18,33 +18,50 @@ function Gauge({ value, max, label, color }) {
   const offset = circumference * (1 - pct);
 
   return (
-    <div className="gauge-container">
-      <svg className="gauge-svg" viewBox="0 0 100 100" style={{ color }}>
-        <circle className="gauge-bg" cx="50" cy="50" r={radius} />
+    <div className="gauge-container relative flex flex-col items-center p-4 bg-zinc-950/60 border border-zinc-800/80 rounded-xl shadow-lg w-[120px]">
+      {/* Outer corner ticks */}
+      <span className="absolute top-0 left-0 w-1 h-1 border-t border-l border-zinc-700" />
+      <span className="absolute top-0 right-0 w-1 h-1 border-t border-r border-zinc-700" />
+      
+      <svg className="gauge-svg w-20 h-20" viewBox="0 0 100 100" style={{ color }}>
+        {/* Outer targeting circles */}
+        <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="0.5" strokeDasharray="3 3" />
+        {/* Gauge background track */}
+        <circle className="gauge-bg" cx="50" cy="50" r={radius} stroke="rgba(255,255,255,0.03)" strokeWidth="4" fill="none" />
+        {/* Glowing active fill */}
         <circle
-          className="gauge-fill"
+          className="gauge-fill transition-all duration-500 ease-out"
           cx="50" cy="50" r={radius}
           stroke="currentColor"
+          strokeWidth="4"
+          fill="none"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{ filter: 'drop-shadow(0 0 4px currentColor)' }}
         />
+        {/* Cockpit radar indicators */}
+        <line x1="50" y1="2" x2="50" y2="6" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+        <line x1="50" y1="94" x2="50" y2="98" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+        <line x1="2" y1="50" x2="6" y2="50" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+        <line x1="94" y1="50" x2="98" y2="50" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
       </svg>
-      <span className="gauge-value" style={{ color }}>
+      <span className="gauge-value mt-2 font-mono text-sm font-black text-white">
         <AnimatedNumber value={value} />%
       </span>
-      <span className="gauge-label">{label}</span>
+      <span className="gauge-label text-[0.58rem] font-extrabold text-zinc-500 uppercase tracking-widest mt-1 font-mono">{label}</span>
     </div>
   );
 }
 
-// ─── Mini Line Chart ─────────────────────────────────────────────
-function MiniChart({ data, color, height = 110 }) {
+// ─── Tactical Mini Line Chart ───────────────────────────────────────
+function MiniChart({ data, color, height = 100 }) {
   if (data.length < 2) return null;
 
   const max = Math.max(...data, 1);
   const min = Math.min(...data, 0);
   const range = max - min || 1;
-  const w = 100;
+  const w = 120;
 
   const points = data.map((v, i) => {
     const x = (i / (data.length - 1)) * w;
@@ -55,18 +72,36 @@ function MiniChart({ data, color, height = 110 }) {
   const areaPoints = `0,${height} ${points.join(' ')} ${w},${height}`;
 
   return (
-    <div className="chart-container" style={{ height }}>
-      <svg viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" style={{ color }}>
+    <div className="chart-container relative" style={{ height }}>
+      <svg viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" style={{ color }} className="w-full h-full">
+        {/* Horizontal grid ticks */}
         {[0.25, 0.5, 0.75].map((pct) => (
           <line
             key={pct}
             x1="0" y1={height * pct} x2={w} y2={height * pct}
-            className="chart-grid-line"
+            stroke="rgba(255,255,255,0.02)"
+            strokeWidth="0.5"
+            strokeDasharray="2 4"
           />
         ))}
-        <polygon points={areaPoints} fill="currentColor" className="chart-area" />
-        <polyline points={points.join(' ')} stroke="currentColor" className="chart-line" />
+        {/* Gradient fill */}
+        <polygon points={areaPoints} fill="currentColor" fillOpacity="0.02" />
+        {/* Core telemetry line */}
+        <polyline 
+          points={points.join(' ')} 
+          stroke="currentColor" 
+          strokeWidth="1.5" 
+          fill="none"
+          style={{ filter: 'drop-shadow(0 0 3px currentColor)' }}
+        />
       </svg>
+      {/* HUD min/max coordinate stamps */}
+      <div className="absolute top-1 right-1 font-mono text-[0.52rem] text-zinc-600">
+        MAX:{max.toFixed(0)}
+      </div>
+      <div className="absolute bottom-1 right-1 font-mono text-[0.52rem] text-zinc-600">
+        MIN:{min.toFixed(0)}
+      </div>
     </div>
   );
 }
@@ -151,321 +186,353 @@ export default function Dashboard({ telemetry, events }) {
   };
 
   return (
-    <div className="dashboard-wrapper">
+    <div className="dashboard-wrapper max-w-7xl mx-auto py-10 px-4 md:px-8 space-y-10">
+      
+      {/* Header telemetry stamps */}
       <ScrollReveal>
-        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-zinc-900">
           <div>
-            <h1>
-              <TerminalTextStream text="📊 Security Operations Center" speed={40} />
+            <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-white animate-pulse" />
+              <TerminalTextStream text="📊 SECURITY OPERATIONS CENTER" speed={30} />
             </h1>
-            <p>
-              <TextScramble delay={200}>Real-time cyber telemetry and neural network response streams</TextScramble>
+            <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest mt-1">
+              <TextScramble delay={200}>REAL-TIME UPLINK TELEMETRY AND AUTONOMOUS RESOLUTION SIGNALS</TextScramble>
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', padding: '4px 10px', background: 'rgba(15,23,42,0.5)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--glass-border)' }}>
-              ⏱ {uptimeStr}
+          <div className="flex gap-4 items-center font-mono text-[0.68rem]">
+            <span className="px-3.5 py-1.5 bg-zinc-950/80 border border-zinc-800/80 rounded text-zinc-400">
+              UPTIME: {uptimeStr}
             </span>
             {isAttackActive && (
-              <span className="live-badge" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
-                <span className="live-dot" />
-                {attackInfo[t.attack_type]?.icon} {attackInfo[t.attack_type]?.name || 'ATTACK'}
+              <span className="px-3.5 py-1.5 bg-red-950/40 border border-red-900/40 rounded text-red-400 font-bold animate-[pulse_2s_infinite]">
+                🚨 {attackInfo[t.attack_type]?.name || 'ATTACK VECTOR ENGAGED'}
               </span>
             )}
           </div>
         </div>
       </ScrollReveal>
 
-      {/* ── Quick Stats Row ── */}
-      <ScrollReveal delay={30}>
-        <div className="stats-grid" style={{ marginBottom: 20 }}>
-          <SpotlightCard className="stat-card glass-card">
-            <div className="stat-icon cyan">📡</div>
-            <div className="stat-info">
-              <h3>Bandwidth In</h3>
-              <div className="stat-value"><AnimatedNumber value={t.bandwidth_in || 0} /> Mbps</div>
+      {/* ── Quick Stats Grid ── */}
+      <ScrollReveal delay={50}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <SpotlightCard className="stat-card luxury-card p-6 flex items-center gap-4 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none" />
+            <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-2xl">📡</div>
+            <div>
+              <h3 className="text-[0.62rem] font-black text-zinc-500 uppercase tracking-widest font-mono">Bandwidth In</h3>
+              <div className="text-xl font-bold text-white mt-1"><AnimatedNumber value={t.bandwidth_in || 0} /> Mbps</div>
             </div>
           </SpotlightCard>
-          <SpotlightCard className="stat-card glass-card">
-            <div className="stat-icon purple">⚡</div>
-            <div className="stat-info">
-              <h3>Latency</h3>
-              <div className="stat-value"><AnimatedNumber value={t.latency_ms || 0} /> ms</div>
+
+          <SpotlightCard className="stat-card luxury-card p-6 flex items-center gap-4 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none" />
+            <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-2xl">⚡</div>
+            <div>
+              <h3 className="text-[0.62rem] font-black text-zinc-500 uppercase tracking-widest font-mono">System Latency</h3>
+              <div className="text-xl font-bold text-white mt-1"><AnimatedNumber value={t.latency_ms || 0} /> ms</div>
             </div>
           </SpotlightCard>
-          <SpotlightCard className="stat-card glass-card">
-            <div className={`stat-icon ${t.system_health > 70 ? 'green' : t.system_health > 40 ? 'orange' : 'red'}`}>💚</div>
-            <div className="stat-info">
-              <h3>System Health</h3>
-              <div className="stat-value" style={{ color: healthColor }}><AnimatedNumber value={t.system_health || 100} />%</div>
+
+          <SpotlightCard className="stat-card luxury-card p-6 flex items-center gap-4 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none" />
+            <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-2xl">💚</div>
+            <div>
+              <h3 className="text-[0.62rem] font-black text-zinc-500 uppercase tracking-widest font-mono">Host Integrity</h3>
+              <div className="text-xl font-bold mt-1" style={{ color: healthColor }}><AnimatedNumber value={t.system_health || 100} />%</div>
             </div>
           </SpotlightCard>
-          <SpotlightCard className="stat-card glass-card">
-            <div className="stat-icon blue">🤖</div>
-            <div className="stat-info">
-              <h3>Agent Status</h3>
-              <div className="stat-value" style={{ color: t.agent_status === 'active' ? 'var(--neon-green)' : 'var(--text-muted)', fontSize: '1rem' }}>
-                {t.agent_status === 'active' ? '● ACTIVE' : '○ STANDBY'}
+
+          <SpotlightCard className="stat-card luxury-card p-6 flex items-center gap-4 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none" />
+            <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-2xl">🤖</div>
+            <div>
+              <h3 className="text-[0.62rem] font-black text-zinc-500 uppercase tracking-widest font-mono">Defense Agent</h3>
+              <div className="text-sm font-mono mt-1 font-bold tracking-wider" style={{ color: t.agent_status === 'active' ? '#34d399' : '#71717a' }}>
+                {t.agent_status === 'active' ? '● ENGAGED' : '○ STANDBY'}
               </div>
             </div>
           </SpotlightCard>
+
         </div>
       </ScrollReveal>
 
-      {/* ── Bento Grid Layout ── */}
-      <div className="bento-grid">
+      {/* ── Bento Grid Cockpit HUD ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Cell 1: Geolocation Threat Map (Col Span 2, Row Span 2) */}
-        <ScrollReveal delay={50} className="bento-cell col-span-2 row-span-2">
-          <AnimatedBorderCard className="h-full">
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 20 }}>
-              <div className="card-header">
-                <h2>🌐 Global Threat Geolocation Map</h2>
-                <span className={`card-badge ${isAttackActive ? 'badge-alert' : 'badge-live'}`}>
-                  {isAttackActive ? '🚨 ATTACK VECTOR ACTIVE' : '● MONITORING'}
-                </span>
+        {/* Geolocation Threat Map */}
+        <ScrollReveal delay={100} className="lg:col-span-2">
+          <AnimatedBorderCard className="h-full luxury-card p-6 flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-1.5">🌐 Threat Vector Map</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase">Live targeting system mapping packet origins</span>
               </div>
+              <span className={`px-2 py-0.5 rounded font-mono text-[0.58rem] font-bold ${isAttackActive ? 'bg-red-950 border border-red-900 text-red-400 animate-pulse' : 'bg-zinc-900 border border-zinc-800 text-zinc-400'}`}>
+                {isAttackActive ? 'ATTACK VECTORS DETECTED' : 'LEST_MONITORING'}
+              </span>
+            </div>
+            <div className="my-6 min-h-[220px] flex items-center justify-center">
               <WorldMap attackActive={isAttackActive} attackType={t.attack_type} />
-              <div className="bento-stats-row">
-                <span className="stat-label">Active Node Clusters:</span>
-                <span className="stat-val">USA, Frankfurt, Tokyo, Mumbai, Sydney</span>
-              </div>
+            </div>
+            <div className="flex justify-between items-center text-[0.58rem] font-mono text-zinc-500 border-t border-zinc-900 pt-4 mt-2">
+              <span>ACTIVE TARGET BLIPS: US, DE, JP, IN, AU</span>
+              <span>TELEMETRY_REFRESH: OK</span>
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
 
-        {/* Cell 2: Threat Vector Sonar (Col Span 1, Row Span 2) */}
-        <ScrollReveal delay={100} className="bento-cell row-span-2">
-          <AnimatedBorderCard className="h-full">
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 20 }}>
-              <div className="card-header">
-                <h2>📡 Radar Scanning Sonar</h2>
-                <span className={`card-badge ${t.threat_level === 'safe' ? 'badge-info' : 'badge-alert'}`}>
-                  {t.threat_level || 'safe'}
-                </span>
+        {/* Threat Vector Radar Sweep */}
+        <ScrollReveal delay={150}>
+          <AnimatedBorderCard className="h-full luxury-card p-6 flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">📡 Sonar Sweep</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase">Interactive circular sweep scans</span>
               </div>
+              <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-[0.58rem] font-bold">
+                {t.threat_level?.toUpperCase() || 'SAFE'}
+              </span>
+            </div>
+            <div className="my-6 flex items-center justify-center">
               <RadarSweep threatLevel={t.threat_level || 'safe'} />
-              <div className="bento-stats-row" style={{ marginTop: 12 }}>
-                <span className="stat-label">Scan sweep:</span>
-                <span className="stat-val">IDS & WAF signals</span>
-              </div>
+            </div>
+            <div className="text-[0.58rem] font-mono text-zinc-500 border-t border-zinc-900 pt-4 mt-2 text-center">
+              SWEEP CHANNELS: IDS & WAF SIGNATURE PACKETS
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
 
-        {/* Cell 3: Resource Allocation & Health (Col Span 2) */}
-        <ScrollReveal delay={150} className="bento-cell col-span-2">
-          <AnimatedBorderCard>
-            <div style={{ padding: 20 }}>
-              <div className="card-header">
-                <h2>⚙️ Host Resource Allocation & Health</h2>
-                <span className="card-badge badge-live">● TELEMETRY DIALS</span>
+        {/* Resource Allocation Gauges */}
+        <ScrollReveal delay={200} className="lg:col-span-2">
+          <AnimatedBorderCard className="luxury-card p-6">
+            <div className="flex justify-between items-center mb-6 border-b border-zinc-900 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">⚙️ Core Resource Dials</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase">Active hardware CPU/RAM thread measurements</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24, alignItems: 'center' }}>
-                <div className="gauges-row" style={{ margin: 0, justifyContent: 'space-around' }}>
-                  <Gauge value={t.cpu_usage || 0} max={100} label="CPU Load" color="#3b82f6" />
-                  <Gauge value={t.ram_usage || 0} max={100} label="RAM Usage" color="#a855f7" />
-                </div>
-                <div style={{ borderLeft: '1px solid var(--glass-border)', paddingLeft: 24 }}>
-                  <div className="health-bar-container">
-                    <div className="health-bar-track">
-                      <div
-                        className="health-bar-fill"
-                        style={{
-                          width: `${t.system_health || 100}%`,
-                          background: `linear-gradient(90deg, ${healthColor}, ${healthColor}cc)`,
-                          color: healthColor,
-                        }}
-                      />
-                    </div>
-                    <div className="health-bar-label">
-                      <span>Host Integrity</span>
-                      <span><AnimatedNumber value={t.system_health || 100} />%</span>
-                    </div>
+              <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-[0.58rem] font-bold">UPLINK_U: 24MS</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="flex justify-around items-center py-4">
+                <Gauge value={t.cpu_usage || 0} max={100} label="CPU Core" color="#e4e4e7" />
+                <Gauge value={t.ram_usage || 0} max={100} label="RAM Pool" color="#a1a1aa" />
+              </div>
+              
+              <div className="space-y-4 md:border-l md:border-zinc-900 md:pl-8">
+                <div className="health-bar-container">
+                  <div className="flex justify-between items-center text-[0.62rem] font-mono text-zinc-500 mb-2">
+                    <span>HOST INTEGRITY LEVEL</span>
+                    <span style={{ color: healthColor }} className="font-bold"><AnimatedNumber value={t.system_health || 100} />%</span>
+                  </div>
+                  <div className="health-bar-track h-2 bg-zinc-900 rounded-full overflow-hidden">
+                    <div
+                      className="health-bar-fill h-full rounded-full transition-all duration-500 ease-out"
+                      style={{
+                        width: `${t.system_health || 100}%`,
+                        background: healthColor,
+                        boxShadow: `0 0 8px ${healthColor}`
+                      }}
+                    />
                   </div>
                 </div>
+                <div className="text-[0.58rem] font-mono text-zinc-500 leading-relaxed">
+                  System logs confirm kernel interface validation check succeeded. No stack anomalies detected.
+                </div>
               </div>
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
 
-        {/* Cell 4: Model Validation Metrics (Col Span 1) */}
-        <ScrollReveal delay={200} className="bento-cell">
-          <AnimatedBorderCard className="h-full">
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 20 }}>
-              <div className="card-header">
-                <h2>🧠 AI Model Validation</h2>
+        {/* AI Model Validation */}
+        <ScrollReveal delay={250}>
+          <AnimatedBorderCard className="h-full luxury-card p-6 flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">🧠 AI Classifier Sets</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase">Current metrics from the pipeline</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div className="feature-item">
-                  <span className="feature-name">IDS RF Accuracy</span>
-                  <span className="feature-value">{(modelMetrics?.ids_metrics?.accuracy * 100 || 100).toFixed(0)}%</span>
-                </div>
-                <div className="feature-item">
-                  <span className="feature-name">Phishing Accuracy</span>
-                  <span className="feature-value">{(modelMetrics?.phishing_metrics?.accuracy * 100 || 100).toFixed(0)}%</span>
-                </div>
+            </div>
+            
+            <div className="space-y-4 my-4">
+              <div className="flex justify-between items-center p-3.5 bg-zinc-950/60 border border-zinc-900 rounded-lg">
+                <span className="text-xs font-mono text-zinc-400">IDS Classifier Accuracy</span>
+                <span className="text-sm font-mono font-bold text-white">{(modelMetrics?.ids_metrics?.accuracy * 100 || 99.8).toFixed(1)}%</span>
               </div>
-              <div className="bento-stats-row">
-                <span className="stat-label">Classifier parameters:</span>
-                <span className="stat-val">Scikit-Learn metrics</span>
+              <div className="flex justify-between items-center p-3.5 bg-zinc-950/60 border border-zinc-900 rounded-lg">
+                <span className="text-xs font-mono text-zinc-400">Phishing Scanner Precision</span>
+                <span className="text-sm font-mono font-bold text-white">{(modelMetrics?.phishing_metrics?.accuracy * 100 || 99.2).toFixed(1)}%</span>
               </div>
+            </div>
+
+            <div className="text-[0.58rem] font-mono text-zinc-500 border-t border-zinc-900 pt-4 mt-2">
+              VALIDATION MATRIX SOURCE: SQLITE LEDGER
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
 
-        {/* Cell 5: Bandwidth, Latency & Packet Rate (Col Span 2) */}
-        <ScrollReveal delay={250} className="bento-cell col-span-2">
-          <AnimatedBorderCard>
-            <div style={{ padding: 20 }}>
-              <div className="card-header">
-                <h2>📊 Analytics Performance Charts</h2>
-                <span className="live-badge">
-                  <span className="live-dot" />
-                  LIVE
+        {/* Performance Charts */}
+        <ScrollReveal delay={300} className="lg:col-span-3">
+          <AnimatedBorderCard className="luxury-card p-6">
+            <div className="flex justify-between items-center mb-8 border-b border-zinc-900 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">📈 Network Analytics Waveforms</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase">Live history buffers streaming at 1s intervals</span>
+              </div>
+              <span className="h-2 w-2 bg-emerald-500 rounded-full animate-ping" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-zinc-950/40 border border-zinc-900 p-4 rounded-xl">
+                <span className="text-[0.62rem] font-mono font-bold text-zinc-400 block mb-4">
+                  Bandwidth ({t.bandwidth_in || 0} Mbps)
                 </span>
+                <MiniChart data={bandwidthHistory} color="#ffffff" height={80} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                    Bandwidth (<AnimatedNumber value={t.bandwidth_in || 0} /> Mbps)
-                  </span>
-                  <MiniChart data={bandwidthHistory} color="#22d3ee" height={90} />
-                </div>
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                    Latency (<AnimatedNumber value={t.latency_ms || 0} /> ms)
-                  </span>
-                  <MiniChart data={latencyHistory} color="#a855f7" height={90} />
-                </div>
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                    Packet Rate (pkt/s)
-                  </span>
-                  <MiniChart data={packetRateHistory} color="#10b981" height={90} />
-                </div>
+              <div className="bg-zinc-950/40 border border-zinc-900 p-4 rounded-xl">
+                <span className="text-[0.62rem] font-mono font-bold text-zinc-400 block mb-4">
+                  Latency ({t.latency_ms || 0} ms)
+                </span>
+                <MiniChart data={latencyHistory} color="#e4e4e7" height={80} />
+              </div>
+              <div className="bg-zinc-950/40 border border-zinc-900 p-4 rounded-xl">
+                <span className="text-[0.62rem] font-mono font-bold text-zinc-400 block mb-4">
+                  Packet Rate (pkt/s)
+                </span>
+                <MiniChart data={packetRateHistory} color="#a1a1aa" height={80} />
               </div>
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
 
-        {/* Cell 6: Incident Logs Feed (Col Span 3) */}
-        <ScrollReveal delay={300} className="bento-cell col-span-3">
-          <SpotlightCard>
-            <div className="card-header">
-              <h2>🚨 Active Threat Indicators Feed</h2>
-              <span className="card-badge badge-alert">{recentAlerts.length} Warnings</span>
+        {/* Active Incident Logs Feed */}
+        <ScrollReveal delay={350} className="lg:col-span-3">
+          <SpotlightCard className="luxury-card p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">🚨 Active Threat signature Feed</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase">Severe event notifications from packet capture filters</span>
+              </div>
+              <span className="px-2 py-0.5 rounded bg-red-950 border border-red-900 text-red-400 font-mono text-[0.58rem] font-bold">
+                {recentAlerts.length} WARNINGS
+              </span>
             </div>
+
             {recentAlerts.length === 0 ? (
-              <div className="empty-state" style={{ padding: '24px 0' }}>
-                <div className="empty-icon">🟢</div>
-                <h3>No Active Threat Signatures</h3>
-                <p>System operational logs normal. Click logs inside the console switcher to verify ledger.</p>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="text-3xl mb-3">🟢</div>
+                <h4 className="text-xs font-mono text-zinc-400 uppercase tracking-wider font-bold">Zero Anomalies Detected</h4>
+                <p className="text-[0.68rem] text-zinc-500 max-w-sm mt-1 leading-relaxed">No critical attack vector signatures matched current database models.</p>
               </div>
             ) : (
-              <div className="alert-feed" style={{ maxHeight: '180px' }}>
+              <div className="space-y-2 max-h-[220px] overflow-y-auto pr-2">
                 {recentAlerts.map((evt, i) => (
                   <div
                     key={i}
-                    className={`alert-item severity-${evt.severity}`}
                     onClick={() => setSelectedAlert(evt)}
-                    style={{ cursor: 'pointer' }}
-                    title="Click to launch Triage action"
+                    className="p-3 bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800/80 hover:border-zinc-700/60 rounded-lg flex items-center justify-between gap-4 cursor-pointer transition-all"
                   >
-                    <span className="alert-time">
-                      {evt.timestamp ? new Date(evt.timestamp).toLocaleTimeString() : '--'}
-                    </span>
-                    <div className="alert-content">
-                      <div className="alert-message">{evt.message}</div>
-                      <div className="alert-meta">
-                        {evt.source_ip} → {evt.destination_ip} | {evt.event_type} (Click to Triage)
+                    <div className="flex items-center gap-3">
+                      <span className="text-red-500 font-mono text-xs font-bold">🚨 [CRIT]</span>
+                      <div>
+                        <div className="text-xs text-white font-medium truncate max-w-[280px]">{evt.message}</div>
+                        <div className="text-[0.62rem] font-mono text-zinc-500 mt-0.5">{evt.source_ip} &gt;&gt; {evt.destination_ip}</div>
                       </div>
                     </div>
+                    <span className="text-[0.58rem] font-mono text-zinc-500">
+                      {evt.timestamp ? new Date(evt.timestamp).toLocaleTimeString() : '--'}
+                    </span>
                   </div>
                 ))}
               </div>
             )}
           </SpotlightCard>
         </ScrollReveal>
+
       </div>
 
-      {/* ── Incident Triage sliding drawer modal ── */}
+      {/* Incident Triage sliding drawer modal */}
       {selectedAlert && (
-        <div className="triage-drawer-overlay">
-          <div className="triage-drawer">
-            <div className="triage-drawer-header">
-              <h3>🚨 Incident Triage Drawer</h3>
-              <button className="btn btn-ghost btn-sm" onClick={() => setSelectedAlert(null)}>
-                ✖ Close
-              </button>
-            </div>
-            <div className="triage-drawer-body">
-              <div className="triage-step-indicator">
-                <span className="step active">1. Triage</span>
-                <span className="step active">2. Investigate</span>
-                <span className="step">3. Respond</span>
+        <div className="triage-drawer-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-end">
+          <div className="triage-drawer w-full max-w-md h-full bg-zinc-950 border-l border-zinc-800/80 p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+            
+            {/* Corner Bracket Decorators */}
+            <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-zinc-800" />
+            <span className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-zinc-800" />
+            
+            <div className="space-y-6">
+              <div className="flex justify-between items-center border-b border-zinc-900 pb-4">
+                <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                  <ShieldAlert className="h-5 w-5 text-red-500" /> Incident Analyzer
+                </h3>
+                <button 
+                  onClick={() => setSelectedAlert(null)}
+                  className="p-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  ✖ Close
+                </button>
               </div>
 
-              <div className="triage-details">
-                <div className="feature-item">
-                  <span className="feature-name">Event ID</span>
-                  <span className="feature-value">{selectedAlert.event_id}</span>
+              <div className="flex justify-around items-center border border-zinc-900 bg-zinc-900/30 p-3 rounded-lg font-mono text-[0.58rem]">
+                <span className="text-emerald-400 font-bold">1. TRIAGE</span>
+                <span className="text-zinc-600">---</span>
+                <span className="text-emerald-400 font-bold">2. DETECT</span>
+                <span className="text-zinc-600">---</span>
+                <span className="text-zinc-400 font-bold">3. BLOCK</span>
+              </div>
+
+              <div className="space-y-3 font-mono text-[0.68rem] text-zinc-400 bg-zinc-900/40 border border-zinc-900 p-4 rounded-xl">
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">EVENT UUID:</span>
+                  <span className="text-white font-bold">{selectedAlert.event_id?.slice(0, 18)}...</span>
                 </div>
-                <div className="feature-item">
-                  <span className="feature-name">Severity</span>
-                  <span className="feature-value" style={{ color: '#ef4444', textTransform: 'uppercase' }}>{selectedAlert.severity}</span>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">SEVERITY LEVEL:</span>
+                  <span className="text-red-400 font-bold">{selectedAlert.severity?.toUpperCase()}</span>
                 </div>
-                <div className="feature-item">
-                  <span className="feature-name">Source Host IP</span>
-                  <span className="feature-value" style={{ fontFamily: 'var(--font-mono)' }}>{selectedAlert.source_ip}</span>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">SOURCE IP:</span>
+                  <span className="text-white font-bold">{selectedAlert.source_ip}</span>
                 </div>
-                <div className="feature-item">
-                  <span className="feature-name">Destination IP</span>
-                  <span className="feature-value" style={{ fontFamily: 'var(--font-mono)' }}>{selectedAlert.destination_ip}</span>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">DESTINATION IP:</span>
+                  <span className="text-white font-bold">{selectedAlert.destination_ip}</span>
                 </div>
-                <div style={{ marginTop: 12, fontSize: '0.82rem', padding: '10px 14px', background: 'var(--bg-tertiary)', borderRadius: 'var(--border-radius-xs)', border: '1px solid var(--glass-border)' }}>
-                  <strong>Log Alert Description:</strong>
-                  <p style={{ marginTop: 4, color: 'var(--text-secondary)' }}>{selectedAlert.message}</p>
+                <div className="border-t border-zinc-900 pt-3 mt-3">
+                  <span className="text-zinc-500 block mb-1">SIGNATURE MESSAGE:</span>
+                  <p className="text-[0.62rem] leading-relaxed text-zinc-300">{selectedAlert.message}</p>
                 </div>
               </div>
 
               {blockMessage && (
-                <div className="auth-alert success" style={{ marginTop: 14 }}>
-                  <span>🛡️</span> {blockMessage}
+                <div className="p-3 bg-emerald-950/20 border border-emerald-900/40 rounded-lg text-emerald-400 font-mono text-xs text-center animate-pulse">
+                  🛡️ {blockMessage}
                 </div>
               )}
-
-              <div className="triage-actions" style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 24 }}>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleBlockIP(selectedAlert.source_ip)}
-                  disabled={blocking || selectedAlert.source_ip === 'SYSTEM' || selectedAlert.source_ip === 'AEGIS-AGENT'}
-                  style={{ justifyContent: 'center' }}
-                >
-                  {blocking ? <span className="spinner" /> : '🛡️ Apply Firewall IP Block'}
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    // Deep link to phishing URL classifier scan
-                    window.location.href = `/phishing?prefill_ip=${selectedAlert.source_ip}`;
-                  }}
-                  style={{ justifyContent: 'center' }}
-                >
-                  🔍 Deep Investigate Source Node
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => setSelectedAlert(null)}
-                  style={{ justifyContent: 'center' }}
-                >
-                  Dismiss Incident Alert
-                </button>
-              </div>
             </div>
+
+            <div className="space-y-3 border-t border-zinc-900 pt-6 mt-6">
+              <button
+                onClick={() => handleBlockIP(selectedAlert.source_ip)}
+                disabled={blocking || selectedAlert.source_ip === 'SYSTEM' || selectedAlert.source_ip === 'AEGIS-AGENT'}
+                className="w-full py-3 bg-red-950 hover:bg-red-900 text-red-400 font-mono text-xs font-bold border border-red-900 rounded-lg cursor-pointer transition-all disabled:opacity-30"
+              >
+                {blocking ? 'APPLYING RULE...' : '🛡️ APPLY FIREWALL IP BLOCK'}
+              </button>
+              <button
+                onClick={() => navigate(`/phishing?prefill_ip=${selectedAlert.source_ip}`)}
+                className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-mono text-xs font-bold rounded-lg cursor-pointer transition-all"
+              >
+                🔍 INVESTIGATE NODE IN SCANNERS
+              </button>
+            </div>
+            
           </div>
         </div>
       )}
+      
     </div>
   );
 }

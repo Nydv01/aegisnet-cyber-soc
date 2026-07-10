@@ -212,7 +212,7 @@ export default function Auth({ onLogin }) {
             {isLogin ? "Need a new operator ID? " : "Already registered? "}
             <button
               className="btn btn-ghost btn-sm"
-              style={{ border: 'none', background: 'transparent', padding: '0 4px', color: 'var(--neon-cyan)', cursor: 'pointer', display: 'inline', fontWeight: 700 }}
+              style={{ border: 'none', background: 'transparent', padding: '0 4px', color: 'var(--text-primary)', cursor: 'pointer', display: 'inline', fontWeight: 700 }}
               onClick={() => {
                 setIsLogin(!isLogin);
                 setError(null);

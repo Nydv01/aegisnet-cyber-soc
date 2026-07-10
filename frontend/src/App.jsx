@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Simulator from './components/Simulator';
 import Phishing from './components/Phishing';
@@ -29,6 +29,7 @@ function AppContent() {
   const wsRef = useRef(null);
   const reconnectTimerRef = useRef(null);
   const toast = useToast();
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem('aegis_token');
@@ -192,10 +193,10 @@ function AppContent() {
         </div>
       </header>
 
-      {/* Main Content Area with Page Transitions */}
+      {/* Main Content Area with Cinematic Page Transitions */}
       <main className="main-content-full" role="main">
         <PageTransition>
-          <Routes>
+          <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Auth onLogin={(username) => setUser(username)} />} />
             <Route

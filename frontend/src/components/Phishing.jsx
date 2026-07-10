@@ -485,10 +485,10 @@ export default function Phishing() {
                               width: barWidth,
                               background: result.is_phishing 
                                 ? 'linear-gradient(90deg, rgba(239,68,68,0.6), var(--neon-red))' 
-                                : 'linear-gradient(90deg, var(--neon-cyan), var(--neon-blue))',
+                                : 'linear-gradient(90deg, #ffffff, #a1a1aa)',
                               boxShadow: result.is_phishing 
                                 ? '0 0 8px rgba(239, 68, 68, 0.3)' 
-                                : '0 0 8px rgba(34, 211, 238, 0.3)',
+                                : '0 0 8px rgba(255, 255, 255, 0.2)',
                             }}
                           />
                         </div>

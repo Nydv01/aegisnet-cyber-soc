@@ -44,7 +44,7 @@ export default function MatrixBackground({ attackActive = false, intensity = 0.5
       for (let i = 0; i < drops.length; i++) {
         // Randomly pick a character
         const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-        
+
         // Define color based on active attack state
         if (attackActive) {
           // Under attack: threat red/orange highlight
@@ -55,7 +55,7 @@ export default function MatrixBackground({ attackActive = false, intensity = 0.5
           }
         } else {
           // Normal state: glowing white/silver shades (carbon chrome feel)
-          ctx.fillStyle = Math.random() < 0.15 
+          ctx.fillStyle = Math.random() < 0.15
             ? 'rgba(255, 255, 255, 0.22)' // Glowing Chrome-White
             : 'rgba(161, 161, 170, 0.12)'; // Muted Silver-Zinc
         }

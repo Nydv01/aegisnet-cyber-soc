@@ -3,7 +3,6 @@ import SpotlightCard from './SpotlightCard';
 import ScrollReveal from './ScrollReveal';
 import AnimatedNumber from './AnimatedNumber';
 import TextScramble from './TextScramble';
-import ShinyText from './ShinyText';
 import GlitchText from './GlitchText';
 import CyberTerminal from './CyberTerminal';
 import NetworkGraph from './NetworkGraph';
@@ -18,7 +17,7 @@ const ATTACKS = [
     name: 'DDoS Attack',
     desc: 'Distributed Denial of Service flood',
     severity: 'CRITICAL',
-    color: 'var(--neon-red)',
+    color: '#ef4444',
   },
   {
     type: 'port_scan',
@@ -26,7 +25,7 @@ const ATTACKS = [
     name: 'Port Scan',
     desc: 'Network reconnaissance sweep',
     severity: 'HIGH',
-    color: 'var(--neon-orange)',
+    color: '#f59e0b',
   },
   {
     type: 'brute_force',
@@ -34,7 +33,7 @@ const ATTACKS = [
     name: 'Brute Force',
     desc: 'SSH credential brute force',
     severity: 'HIGH',
-    color: 'var(--neon-orange)',
+    color: '#f59e0b',
   },
   {
     type: 'sql_injection',
@@ -42,7 +41,7 @@ const ATTACKS = [
     name: 'SQL Injection',
     desc: 'Database injection payload',
     severity: 'CRITICAL',
-    color: 'var(--neon-red)',
+    color: '#ef4444',
   },
 ];
 
@@ -110,7 +109,9 @@ export default function Simulator({ telemetry, events }) {
     } catch (e) {
       console.error('Failed to launch attack:', e);
     }
-    setLoading(false);
+    setLoading(true);
+    // Add artificial HMR sweep delay for premium vibe
+    setTimeout(() => setLoading(false), 800);
   };
 
   const stopAttack = async () => {
@@ -121,7 +122,8 @@ export default function Simulator({ telemetry, events }) {
     } catch (e) {
       console.error('Failed to stop attack:', e);
     }
-    setLoading(false);
+    setLoading(true);
+    setTimeout(() => setLoading(false), 800);
   };
 
   const toggleAgent = async () => {
@@ -152,290 +154,229 @@ export default function Simulator({ telemetry, events }) {
   const effectiveness = attackEvents > 0 ? Math.min(100, (defenseActions / Math.max(1, attackEvents)) * 100) : 0;
 
   return (
-    <div>
+    <div className="simulator-wrapper max-w-7xl mx-auto py-10 px-4 md:px-8 space-y-10">
+      
+      {/* Page Header */}
       <ScrollReveal>
-        <div className="page-header">
-          <h1>
-            ⚔️ <TerminalTextStream text="Threat Simulation Core" speed={40} />
-          </h1>
-          <p>
-            <TextScramble delay={200}>Inject cyber attack vectors and coordinate automated neural defense mitigations in a sandboxed environment</TextScramble>
-          </p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-zinc-900">
+          <div>
+            <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-white animate-pulse" />
+              <TerminalTextStream text="⚔️ THREAT SIMULATION CHAMBER" speed={30} />
+            </h1>
+            <p className="text-xs font-mono text-zinc-500 uppercase tracking-widest mt-1">
+              <TextScramble delay={200}>INJECT ATTACK FLAGS AND MONITOR NEURAL POLICY ACTION TIMELINES</TextScramble>
+            </p>
+          </div>
         </div>
       </ScrollReveal>
 
-      {/* ── Network Topology Graph (Canvas) ── */}
+      {/* Live Network Topology */}
       <ScrollReveal delay={50}>
-        <SpotlightCard style={{ marginBottom: 20 }}>
-          <div className="card-header">
-            <h2>🌐 Live Network Topology</h2>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <SpotlightCard className="luxury-card p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.003)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.003)_1px,transparent_1px)] bg-[size:15px_15px] pointer-events-none" />
+          
+          <div className="flex justify-between items-center mb-6 relative z-10">
+            <div>
+              <h2 className="text-lg font-bold text-white tracking-tight">🌐 Live Network Topology</h2>
+              <span className="text-[0.55rem] font-mono text-zinc-500 uppercase font-bold">Node switches and packet streams mapping resolution path</span>
+            </div>
+            <div className="flex gap-2">
               {activeAttack && (
-                <span className="card-badge badge-alert">
-                  <GlitchText active={true}>UNDER ATTACK</GlitchText>
+                <span className="px-2 py-0.5 rounded bg-red-950 border border-red-900 text-red-400 font-mono text-[0.58rem] font-bold animate-[pulse_1.5s_infinite]">
+                  UNDER ATTACK
                 </span>
               )}
               {agentEnabled && activeAttack && (
-                <span className="card-badge badge-live">AGENT DEFENDING</span>
+                <span className="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-900 text-emerald-400 font-mono text-[0.58rem] font-bold animate-pulse">
+                  AGENT DEFENDING
+                </span>
               )}
             </div>
           </div>
-          <NetworkGraph
-            attackActive={!!activeAttack}
-            attackType={activeAttack || 'none'}
-            systemHealth={systemHealth}
-            agentAction={agentAction}
-          />
+
+          <div className="relative z-10 min-h-[300px]">
+            <NetworkGraph
+              attackActive={!!activeAttack}
+              attackType={activeAttack || 'none'}
+              systemHealth={systemHealth}
+              agentAction={agentAction}
+            />
+          </div>
         </SpotlightCard>
       </ScrollReveal>
 
-      {/* ── Attack Stats Row ── */}
+      {/* Stats counter details */}
       {activeAttack && (
         <ScrollReveal delay={80}>
-          <div className="stats-grid" style={{ marginBottom: 20 }}>
-            <SpotlightCard className="stat-card glass-card">
-              <div className="stat-icon red">⚠️</div>
-              <div className="stat-info">
-                <h3>Active Threat</h3>
-                <div className="stat-value" style={{ color: 'var(--neon-red)', fontSize: '1.1rem' }}>
-                  {activeAttack.replace(/_/g, ' ').toUpperCase()}
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <SpotlightCard className="stat-card luxury-card p-5 flex items-center gap-3">
+              <div className="text-red-500 font-mono text-xs font-bold">⚠️ THREAT:</div>
+              <div className="font-mono text-xs font-bold text-white">{activeAttack.replace(/_/g, ' ').toUpperCase()}</div>
             </SpotlightCard>
-            <SpotlightCard className="stat-card glass-card">
-              <div className="stat-icon orange">📊</div>
-              <div className="stat-info">
-                <h3>Threat Level</h3>
-                <div className="stat-value" style={{ color: 'var(--neon-orange)' }}>
-                  {telemetry?.threat_level?.toUpperCase() || 'N/A'}
-                </div>
-              </div>
+            <SpotlightCard className="stat-card luxury-card p-5 flex items-center gap-3">
+              <div className="text-zinc-500 font-mono text-xs font-bold">LEVEL:</div>
+              <div className="font-mono text-xs font-bold text-white">{telemetry?.threat_level?.toUpperCase() || 'N/A'}</div>
             </SpotlightCard>
-            <SpotlightCard className="stat-card glass-card">
-              <div className="stat-icon cyan">🛡️</div>
-              <div className="stat-info">
-                <h3>Defense Effectiveness</h3>
-                <div className="stat-value" style={{ color: effectiveness > 50 ? 'var(--neon-green)' : 'var(--neon-orange)' }}>
-                  {effectiveness.toFixed(0)}%
-                </div>
-              </div>
+            <SpotlightCard className="stat-card luxury-card p-5 flex items-center gap-3">
+              <div className="text-zinc-500 font-mono text-xs font-bold">DEFENSE:</div>
+              <div className="font-mono text-xs font-bold text-white">{effectiveness.toFixed(0)}% EFFECTIVE</div>
             </SpotlightCard>
-            <SpotlightCard className="stat-card glass-card">
-              <div className="stat-icon green">💚</div>
-              <div className="stat-info">
-                <h3>System Health</h3>
-                <div className="stat-value" style={{ color: systemHealth > 70 ? 'var(--neon-green)' : systemHealth > 40 ? 'var(--neon-orange)' : 'var(--neon-red)' }}>
-                  {systemHealth.toFixed(0)}%
-                </div>
-              </div>
+            <SpotlightCard className="stat-card luxury-card p-5 flex items-center gap-3">
+              <div className="text-zinc-500 font-mono text-xs font-bold">HEALTH:</div>
+              <div className="font-mono text-xs font-bold text-white">{systemHealth.toFixed(0)}% INTEGRITY</div>
             </SpotlightCard>
           </div>
         </ScrollReveal>
       )}
 
-      {/* ── Layout Grid ── */}
-      <div className="dashboard-grid">
+      {/* Exploit Injector Panel & Agent Control Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Attack Panel */}
-        <ScrollReveal delay={100} className="display-contents">
-          <AnimatedBorderCard>
-            <div style={{ padding: 20 }}>
-              <div className="card-header">
-                <h2>🎯 Threat Injector Panel</h2>
-                {activeAttack && (
-                  <CyberButton variant="danger" onClick={stopAttack} disabled={loading}>
-                    {loading ? <span className="spinner" /> : '⏹ Neutralize'}
-                  </CyberButton>
-                )}
+        {/* Threat Injector */}
+        <ScrollReveal delay={100}>
+          <AnimatedBorderCard className="luxury-card p-6 h-full flex flex-col justify-between space-y-6">
+            <div className="flex justify-between items-center border-b border-zinc-900 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">🎯 Exploit Injector Panel</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase font-bold">Trigger virtual exploit packet floods</span>
               </div>
-
-              <div className="attack-grid">
-                {ATTACKS.map((atk) => (
-                  <button
-                    key={atk.type}
-                    className={`attack-btn ${activeAttack === atk.type ? 'active' : ''}`}
-                    onClick={() => launchAttack(atk.type)}
-                    disabled={loading || (activeAttack && activeAttack !== atk.type)}
-                    id={`attack-${atk.type}`}
-                  >
-                    <span className="attack-icon">{atk.icon}</span>
-                    <span className="attack-name">{atk.name}</span>
-                    <span className="attack-desc">{atk.desc}</span>
-                    <span style={{
-                      fontSize: '0.58rem',
-                      fontWeight: 800,
-                      color: atk.color,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      marginTop: 4,
-                    }}>
-                      {atk.severity}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="slider-container">
-                <label>Exploit Intensity:</label>
-                <input
-                  type="range"
-                  className="slider-input"
-                  min="0.1"
-                  max="1.0"
-                  step="0.1"
-                  value={intensity}
-                  onChange={(e) => setIntensity(parseFloat(e.target.value))}
-                />
-                <span className="slider-value">{(intensity * 100).toFixed(0)}%</span>
-              </div>
-
-              {/* Attack intensity waveform */}
               {activeAttack && (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>
-                    Attack Intensity Waveform
-                  </div>
-                  <div className="health-bar-track" style={{ height: 10 }}>
-                    <div
-                      className="health-bar-fill"
-                      style={{
-                        width: `${intensity * 100}%`,
-                        background: 'linear-gradient(90deg, var(--neon-orange), var(--neon-red))',
-                        boxShadow: '0 0 12px rgba(239, 68, 68, 0.4)',
-                      }}
-                    />
-                  </div>
-                </div>
+                <button
+                  onClick={stopAttack}
+                  disabled={loading}
+                  className="px-4 py-1.5 bg-red-950 hover:bg-red-900 text-red-400 font-mono text-[0.62rem] font-bold border border-red-900 rounded cursor-pointer transition-all flex items-center gap-1.5"
+                >
+                  {loading ? <RefreshCw className="h-3 w-3 animate-spin" /> : '⏹ STOP INJECT'}
+                </button>
               )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {ATTACKS.map((atk) => (
+                <button
+                  key={atk.type}
+                  onClick={() => launchAttack(atk.type)}
+                  disabled={loading || (activeAttack && activeAttack !== atk.type)}
+                  className={`p-4 bg-zinc-950/60 hover:bg-zinc-900/60 border rounded-xl flex flex-col items-start text-left gap-2 cursor-pointer transition-all ${activeAttack === atk.type ? 'border-zinc-500' : 'border-zinc-900'}`}
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-xl">{atk.icon}</span>
+                    <span className="text-[0.55rem] font-mono font-bold" style={{ color: atk.color }}>{atk.severity}</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white">{atk.name}</h4>
+                  <p className="text-[0.68rem] text-zinc-500 leading-relaxed font-light">{atk.desc}</p>
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-zinc-900">
+              <div className="flex justify-between text-[0.68rem] font-mono text-zinc-500 font-bold">
+                <span>EXPLOIT INTENSITY LEVEL</span>
+                <span className="text-white">{(intensity * 100).toFixed(0)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1.0"
+                step="0.1"
+                value={intensity}
+                onChange={(e) => setIntensity(parseFloat(e.target.value))}
+                className="w-full h-1 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-white"
+              />
             </div>
           </AnimatedBorderCard>
         </ScrollReveal>
 
-        {/* AI Agent Control */}
-        <ScrollReveal delay={150} className="display-contents">
-          <AnimatedBorderCard>
-            <div style={{ padding: 20 }}>
-              <div className="card-header">
-                <h2>🤖 Neural Response Agent</h2>
-                <span className={`card-badge ${agentEnabled ? 'badge-live' : 'badge-info'}`}>
-                  {agentEnabled ? '● Active' : '○ Standby'}
-                </span>
+        {/* AI Agent Panel */}
+        <ScrollReveal delay={150}>
+          <AnimatedBorderCard className="luxury-card p-6 h-full flex flex-col justify-between space-y-6">
+            <div className="flex justify-between items-center border-b border-zinc-900 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">🤖 Neural Response Agent</h2>
+                <span className="text-[0.55rem] font-mono text-zinc-500 uppercase font-bold">Autonomous policy decision mappings</span>
               </div>
+              <span className={`px-2 py-0.5 rounded font-mono text-[0.58rem] font-bold ${agentEnabled ? 'bg-emerald-950 border border-emerald-900 text-emerald-400 animate-pulse' : 'bg-zinc-900 border border-zinc-800 text-zinc-400'}`}>
+                {agentEnabled ? 'AUTONOMOUS' : 'STANDBY'}
+              </span>
+            </div>
 
-              <div className="toggle-container" style={{ marginBottom: 20 }}>
-                <div
-                  className={`toggle-switch ${agentEnabled ? 'active' : ''}`}
-                  onClick={toggleAgent}
-                  role="switch"
-                  aria-checked={agentEnabled}
-                  id="agent-toggle"
-                />
-                <span className="toggle-label">
-                  {agentEnabled ? 'Autonomous defense engaged' : 'Toggle autonomous RL mode'}
-                </span>
+            <div className="flex items-center gap-4 p-4 bg-zinc-950/60 border border-zinc-900 rounded-xl justify-between">
+              <span className="text-xs font-mono text-zinc-400">Toggle autonomous reinforcement defense</span>
+              <div
+                onClick={toggleAgent}
+                className={`w-11 h-6 rounded-full p-1 cursor-pointer transition-all duration-300 ${agentEnabled ? 'bg-white' : 'bg-zinc-900 border border-zinc-800'}`}
+              >
+                <div className={`w-4 h-4 rounded-full transition-all duration-300 ${agentEnabled ? 'bg-zinc-950 translate-x-5' : 'bg-zinc-700'}`} />
               </div>
+            </div>
 
-              {agentEnabled && agentStatus && (
-                <>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
-                    <div className="feature-item">
-                      <span className="feature-name">Active Action</span>
-                      <span className="feature-value" style={{ textTransform: 'uppercase', color: 'var(--neon-cyan)' }}>
-                        {agentStatus.last_action || 'idle'}
-                      </span>
-                    </div>
-                    <div className="feature-item">
-                      <span className="feature-name">Agent State</span>
-                      <span className="feature-value" style={{ color: 'var(--neon-green)' }}>
-                        {agentStatus.current_state ?? 'N/A'}
-                      </span>
-                    </div>
+            {agentEnabled && agentStatus ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 font-mono text-xs">
+                  <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg">
+                    <span className="text-zinc-500 block text-[0.58rem] mb-1">ACTIVE MITIGATION</span>
+                    <strong className="text-white uppercase">{agentStatus.last_action || 'idle'}</strong>
                   </div>
+                  <div className="bg-zinc-950/60 border border-zinc-900 p-3 rounded-lg">
+                    <span className="text-zinc-500 block text-[0.58rem] mb-1">STATE INDEX</span>
+                    <strong className="text-emerald-400">{agentStatus.current_state ?? 'N/A'}</strong>
+                  </div>
+                </div>
 
-                  <h3 style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: 8, marginTop: 8, letterSpacing: '0.04em', fontWeight: 700, textTransform: 'uppercase' }}>
-                    Mitigation Strategy Preferences (Q-Values)
-                  </h3>
-                  <div className="q-values-grid">
+                <div className="space-y-2">
+                  <span className="text-[0.62rem] font-mono font-bold text-zinc-500 uppercase tracking-widest block">Mitigation Preferences (Q-Values)</span>
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
                     {Object.entries(qValues).map(([action, value]) => (
-                      <div key={action} className="q-value-bar">
-                        <span className="q-value-label">{action.replace(/_/g, ' ')}</span>
-                        <div className="q-value-track">
+                      <div key={action} className="space-y-1.5">
+                        <div className="flex justify-between items-center text-[0.62rem] font-mono">
+                          <span className="text-zinc-400 uppercase">{action.replace(/_/g, ' ')}</span>
+                          <span className={value >= 0 ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>{value.toFixed(2)}</span>
+                        </div>
+                        <div className="h-1 bg-zinc-900 rounded overflow-hidden">
                           <div
-                            className="q-value-fill"
+                            className="h-full rounded"
                             style={{
                               width: `${Math.max(2, (Math.abs(value) / maxQ) * 100)}%`,
-                              background: value >= 0
-                                ? 'linear-gradient(90deg, #22d3ee, #3b82f6)'
-                                : 'linear-gradient(90deg, #ef4444, #dc2626)',
+                              background: value >= 0 ? '#ffffff' : 'rgba(239, 68, 68, 0.7)'
                             }}
                           />
                         </div>
-                        <span className="q-value-num">{value.toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
-                </>
-              )}
-
-              {!agentEnabled && (
-                <div className="empty-state" style={{ padding: '24px 0' }}>
-                  <div className="empty-icon">🤖</div>
-                  <h3>Agent Inactive</h3>
-                  <p>Enable the agent to see real-time Q-value policy decisions</p>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="text-3xl mb-3">🤖</div>
+                <h4 className="text-xs font-mono text-zinc-400 uppercase tracking-wider font-bold">Agent Inactive</h4>
+                <p className="text-[0.68rem] text-zinc-500 max-w-sm mt-1 leading-relaxed">Engage autonomous defense to plot policy mappings.</p>
+              </div>
+            )}
           </AnimatedBorderCard>
         </ScrollReveal>
+
       </div>
 
-      {/* ── Agent Action Timeline ── */}
+      {/* Action timeline logs */}
       {agentEnabled && events && events.filter(e => e.event_type === 'defense').length > 0 && (
         <ScrollReveal delay={180}>
-          <SpotlightCard style={{ marginTop: 20 }}>
-            <div className="card-header">
-              <h2>🕐 Agent Action Timeline</h2>
-              <span className="card-badge badge-info">{events.filter(e => e.event_type === 'defense').length} actions</span>
-            </div>
-            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8 }}>
+          <SpotlightCard className="luxury-card p-6">
+            <h3 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-widest mb-6">Agent Mitigation timeline</h3>
+            <div className="flex gap-4 overflow-x-auto pb-4">
               {events
                 .filter(e => e.event_type === 'defense')
                 .slice(0, 10)
                 .map((evt, i) => {
                   const action = evt.details?.action || 'unknown';
-                  const actionIcons = {
-                    block_ip: '🛡️',
-                    rate_limit: '⏱️',
-                    deploy_honeypot: '🍯',
-                    patch_vulnerability: '🔧',
-                    isolate_segment: '🔒',
-                    escalate_alert: '⚠️',
-                  };
                   return (
-                    <div
-                      key={i}
-                      style={{
-                        minWidth: 110,
-                        padding: '10px 12px',
-                        background: 'rgba(15, 23, 42, 0.4)',
-                        border: '1px solid var(--glass-border)',
-                        borderRadius: 'var(--radius-sm)',
-                        textAlign: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <div style={{ fontSize: '1.2rem', marginBottom: 4 }}>{actionIcons[action] || '🤖'}</div>
-                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'capitalize' }}>
-                        {action.replace(/_/g, ' ')}
-                      </div>
-                      <div style={{ fontSize: '0.58rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', marginTop: 4 }}>
+                    <div key={i} className="min-w-[120px] p-4 bg-zinc-950/60 border border-zinc-900 rounded-xl text-center space-y-1.5 flex-shrink-0">
+                      <span className="text-lg block">🛡️</span>
+                      <span className="text-[0.68rem] font-bold text-white block uppercase truncate max-w-[90px]">{action.replace(/_/g, ' ')}</span>
+                      <span className="text-[0.55rem] font-mono text-zinc-500 block">
                         {evt.timestamp ? new Date(evt.timestamp).toLocaleTimeString() : ''}
-                      </div>
-                      {evt.details?.attack_intensity_remaining != null && (
-                        <div style={{ fontSize: '0.58rem', color: 'var(--neon-orange)', marginTop: 2, fontFamily: 'var(--font-mono)' }}>
-                          ATK: {(evt.details.attack_intensity_remaining * 100).toFixed(0)}%
-                        </div>
-                      )}
+                      </span>
                     </div>
                   );
                 })}
@@ -444,10 +385,11 @@ export default function Simulator({ telemetry, events }) {
         </ScrollReveal>
       )}
 
-      {/* ── Simulated Incident Response Console ── */}
+      {/* Simulated Incident Response Console */}
       <ScrollReveal delay={200}>
         <CyberTerminal telemetry={telemetry} events={events} />
       </ScrollReveal>
+
     </div>
   );
 }

@@ -35,14 +35,14 @@ export default function RadarScan({ threatLevel = 'safe' }) {
     <div className="radar-container" style={{ position: 'relative', width: '100%', height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <svg viewBox="0 0 100 100" style={{ width: '200px', height: '200px' }}>
         {/* Radar grids */}
-        <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(34, 211, 238, 0.05)" strokeWidth="0.5" />
-        <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(34, 211, 238, 0.08)" strokeWidth="0.5" />
-        <circle cx="50" cy="50" r="24" fill="none" stroke="rgba(34, 211, 238, 0.1)" strokeWidth="0.5" />
-        <circle cx="50" cy="50" r="12" fill="none" stroke="rgba(34, 211, 238, 0.15)" strokeWidth="0.5" />
+        <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" />
+        <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="0.5" />
+        <circle cx="50" cy="50" r="24" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="0.5" />
+        <circle cx="50" cy="50" r="12" fill="none" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="0.5" />
         
         {/* Crosshair lines */}
-        <line x1="50" y1="2" x2="50" y2="98" stroke="rgba(34, 211, 238, 0.06)" strokeWidth="0.5" />
-        <line x1="2" y1="50" x2="98" y2="50" stroke="rgba(34, 211, 238, 0.06)" strokeWidth="0.5" />
+        <line x1="50" y1="2" x2="50" y2="98" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="0.5" />
+        <line x1="2" y1="50" x2="98" y2="50" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="0.5" />
         
         {/* Sonar sweep line */}
         <line
@@ -68,9 +68,9 @@ export default function RadarScan({ threatLevel = 'safe' }) {
         {/* Custom gradient definition */}
         <defs>
           <radialGradient id="radarGradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(34, 211, 238, 0.02)" />
-            <stop offset="90%" stopColor="rgba(34, 211, 238, 0.05)" />
-            <stop offset="100%" stopColor="rgba(34, 211, 238, 0)" />
+            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.02)" />
+            <stop offset="90%" stopColor="rgba(255, 255, 255, 0.05)" />
+            <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
           </radialGradient>
         </defs>
 
